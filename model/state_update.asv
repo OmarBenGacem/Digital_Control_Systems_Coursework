@@ -1,0 +1,5 @@
+function x_dot = state_update(x, u)
+
+    x_dot = 
+
+end
