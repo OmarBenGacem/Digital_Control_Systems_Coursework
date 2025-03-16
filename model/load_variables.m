@@ -7,4 +7,4 @@ g = 9.8093;
 
 
 %% Constraints
-phi_mag_max = pi / 4;
+phi_min_max = pi / 4;
