@@ -1,0 +1,37 @@
+%% Define symbolic variables
+syms s s_dot phi phi_dot real      
+syms u F M m g L real           
+
+
+x = [s; s_dot; phi; phi_dot];
+
+
+x_eq = [0; 0; 0; 0];
+u_eq = 0; 
+
+
+s_dot_eq   = s_dot;
+s_ddot_eq  = - (F/M)*s + u;
+phi_dot_eq = phi_dot;
+phi_ddot_eq= (g/L + (F/(m*L))*s)*sin(phi) + (u/L)*cos(phi);
+
+x_dot = [s_dot_eq; s_ddot_eq; phi_dot_eq; phi_ddot_eq];
+
+A_sym = jacobian(x_dot, x);
+
+B_sym = jacobian(x_dot, u);
+A = subs(A_sym, [s, s_dot, phi, phi_dot, u], [x_eq.' u_eq]);
+B = subs(B_sym, [s, s_dot, phi, phi_dot, u], [x_eq.' u_eq]);
+
+
+C = [1 0 0 0;
+     0 0 1 0];
+D = zeros(2, 1);
+disp('The symbolic A matrix is:');
+disp(A);
+disp('The symbolic B matrix is:');
+disp(B);
+disp('The output matrix C is:');
+disp(C);
+disp('The direct transmission matrix D is:');
+disp(D);

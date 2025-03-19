@@ -1,12 +1,32 @@
 function x_dot = state_update(x, u)
+    load_variables;
 
-    s_dot  = x(2);
-    s_ddot = - (F / M) * x(1) + u ;
+    
+    s       = x(1);
+    s_dot   = x(2);
+    phi     = x(3);
+    phi_dot = x(4);
     
 
-    phi_dot  = x(4);
-    phi_ddot = ( g/L + (F/(m * L) ) * x(1) ) * sin(x(3)) - - u/L * cos(x(3));
+    if false
 
-    x_dot = [s_dot ; s_ddot ; phi_dot, phi_ddot];
+        s_dot_eq   = max( s_dot, max_lin_v );
+        s_ddot_eq  = - (F_val/M_val)*s_dot + u/M_val;
+        phi_dot_eq = phi_dot;
+        phi_ddot_eq= ( (g_val/L_val) * sin(phi) ) + ( (F_val/(M_val*L_val)) * s_dot * cos(phi) ) - ( u/(L_val*M_val) * cos(phi) ) ;
+        
+        
+    else
+
+        s_dot_eq   = s_dot;
+        s_ddot_eq  = - (F_val/M_val)*s_dot + u/M_val;
+        phi_dot_eq = phi_dot;
+        phi_ddot_eq= ( (g_val/L_val) * sin(phi) ) + ( (F_val/(M_val*L_val)) * s_dot * cos(phi) ) - ( u/(L_val*M_val) * cos(phi) ) ;
+        
+    end
+
+    x_dot = double([s_dot_eq; s_ddot_eq; phi_dot_eq; phi_ddot_eq]);
+        
+    
 
 end
