@@ -1,10 +1,11 @@
 
 %% Constants
-M = 1;
-F = 1;
-L = 0.842;
-g = 9.8093;
+M_val = 1;
+F_val = 1;
+L_val = 0.842;
+g_val = 9.8093;
 
 
 %% Constraints
-phi_mag_max = pi / 4;
+phi_min_max = pi / 4;
+max_lin_v = 5;
