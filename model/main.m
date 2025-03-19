@@ -368,7 +368,7 @@ if plot_B8
     end
     
     sgtitle('B8) Continuous-Time System with Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/ Continuous_Time_Discrete_Actuation.png');
+    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation.png');
 end
 
 
@@ -428,7 +428,7 @@ if plot_B9
     end
 
        sgtitle('B9) Discrete-Time System Responses Using an Optimal Controller: s (cm) and \phi (deg)')
-       saveas(gcf, '../figures/ Discrete_Time_Discrete_Actuation_Optimal.png');
+       saveas(gcf, '../figures/Discrete_Time_Discrete_Actuation_Optimal.png');
     
 end
 
@@ -540,7 +540,7 @@ if plot_B10
     end
     
     sgtitle('B10) Continuous-Time System with an Optimal Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/ Continuous_Time_Discrete_Actuation_Optimal.png');
+    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation_Optimal.png');
 end
 
 
