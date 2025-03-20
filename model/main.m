@@ -8,17 +8,17 @@ load_variables;
 
 plot_B2 = true;
 plot_B3 = true;
-plot_B4 = true;
-plot_B5 = true;
-plot_B7 = true;
-plot_B8 = true;
-plot_B9 = true;
-plot_B10 = true;
+plot_B4 = false;
+plot_B5 = false;
+plot_B7 = false;
+plot_B8 = false;
+plot_B9 = false;
+plot_B10 = false;
 
 %                      s     sdot   phi     dphi
-initial_conditions = [ 0,   0,     0.00001,      0;
-                       0,     0.1,   -0.0098, 0;   
-                       0,     0,     -0.4,   0;  
+initial_conditions = [ 0,   0,     0.0872665,      0;
+                       0,     0.1,   -0.174533, 0;   
+                       0,     0,     -0.261799,   0;  
                        0,     0,     0.05,   0];  
 tspan = [0 10];
 
@@ -43,6 +43,7 @@ B_val = double(B_val_sym);
 % poles = [-1, -190, -54, -20]
 % poles = [-1, -2, -4, -8];
 poles=[-0.5,-1,-1.5,-2];
+% toOverleaf(P==poles, "poles");
 K = place(A_val, B_val, poles);
 
 A_cl = A_val - B_val*K;
@@ -51,115 +52,188 @@ A_cl = A_val - B_val*K;
 
 
 if plot_B2
+
+    figure('Position', [100, 100, 2200, 800]);
+    nSim = size(initial_conditions, 1);
     
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
+    ax1_all = [];  % Store subplot handles for linking
+    ax2_all = [];
     
+    for i = 1:nSim
         x0 = initial_conditions(i, :).';
         [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
     
-        subplot(2,2,i)       
+        % Convert initial condition from radians to degrees
+        IC_deg = initial_conditions(i,3) * (180/pi);
+    
+        % First subplot: State evolution
+        ax1 = subplot(2, nSim, i);
         yyaxis left
-        plot(t, x(:,1)*100, 'LineWidth', 1.5)
-        ylabel('Displacement (cm)')
-        
+        plot(t, x(:,1)*100, '-', 'LineWidth', 1.5)
+        ylabel('s (cm)')
+    
+        % Find symmetric limits for 's (cm)'
+        y_left_min = min(x(:,1)*100);
+        y_left_max = max(x(:,1)*100);
+        y_left_lim = max(abs([y_left_min, y_left_max]));  % Symmetric limit
+        ylim([-y_left_lim, y_left_lim]);  % Ensure zero alignment
+    
         yyaxis right
         plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('\phi (deg)')
-        
-        title(sprintf('Initial Condition %d', i))
+    
+        % Find symmetric limits for 'φ (deg)'
+        y_right_min = min(x(:,3)*180/pi);
+        y_right_max = max(x(:,3)*180/pi);
+        y_right_lim = max(abs([y_right_min, y_right_max]));  % Symmetric limit
+        ylim([-y_right_lim, y_right_lim]);  % Ensure zero alignment
+    
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-    end
+        xlim([0 t(end)]); 
+        ax1_all = [ax1_all, ax1];  % Store handle
     
-    sgtitle('Continuous Time System Responses: Displacement and Angle')
-    saveas(gcf, '../figures/Continuous_Time_System_Responses_x.png');
-
-
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
-
-        x0 = initial_conditions(i, :).';
-        [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
-        
-
-        subplot(2,2,i)
-        
-
-        yyaxis left
-        plot(t, x(:,2)*100, 'LineWidth', 1.5)
-        ylabel('Linear Velocity (cm/s)')
-        
-        yyaxis right
-        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5) 
-        ylabel('Angular Velocity (deg/s)')
-        title(sprintf('Initial Condition %d', i))
+        % Second subplot: Actuation input
+        ax2 = subplot(2, nSim, i + nSim);
+        u = K * x';  % Ensure matrix multiplication is correct
+        plot(t, u, 'LineWidth', 1.5)
+        title(sprintf("Simulation %d Actuation, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
         xlabel('Time (s)')
+        ylabel('u(t)')
         grid on;
-        legend('s (cm/s)', '\phi (deg/s)', 'Location', 'Best')
+        xlim([0 t(end)]);
+        ax2_all = [ax2_all, ax2];  % Store handle
     end
     
-    sgtitle('B3) Continuous Time System Responses: Linear and Angular Velocities')
+    % Link x-axes for better visualization
+    linkaxes([ax1_all, ax2_all], 'x');
+
+
+    sgtitle('B2) Continuous Time System Responses: Linear and Angular Velocities')
     saveas(gcf, '../figures/Continuous_Time_System_Responses_v.png');
 end
+
+
 
 %% B3
 %  Display plots of y(t) for the nonlinear system (1), from the same initial states x(0) and using the controller designed in point B1. Comment on these plots.
 
 if plot_B3
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
 
 
+    figure('Position', [100, 100, 2200, 800]);
+    nSim = size(initial_conditions, 1);
+    
+    ax1_all = [];  % Store subplot handles for linking
+    ax2_all = [];
+    
+    for i = 1:nSim
         x0 = initial_conditions(i, :).';
         [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
-        
-
-        subplot(2,2,i)
+    
+        % Convert initial condition from radians to degrees
+        IC_deg = initial_conditions(i,3) * (180/pi);
+    
+        % First subplot: State evolution
+        ax1 = subplot(2, nSim, i);
         yyaxis left
-        plot(t, x(:,1)*100, 'LineWidth', 1.5) % s is the first state, in cm now
+        plot(t, x(:,1)*100, '-', 'LineWidth', 1.5)
         ylabel('s (cm)')
-
+    
+        % Find symmetric limits for 's (cm)'
+        y_left_min = min(x(:,1)*100);
+        y_left_max = max(x(:,1)*100);
+        y_left_lim = max(abs([y_left_min, y_left_max]));  % Symmetric limit
+        ylim([-y_left_lim, y_left_lim]);  % Ensure zero alignment
+    
         yyaxis right
-        plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
+        plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('\phi (deg)')
-        
-        title(sprintf('Initial Condition %d', i))
+    
+        % Find symmetric limits for 'φ (deg)'
+        y_right_min = min(x(:,3)*180/pi);
+        y_right_max = max(x(:,3)*180/pi);
+        y_right_lim = max(abs([y_right_min, y_right_max]));  % Symmetric limit
+        ylim([-y_right_lim, y_right_lim]);  % Ensure zero alignment
+    
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+        xlim([0 t(end)]); 
+        ax1_all = [ax1_all, ax1];  % Store handle
+    
+        % Second subplot: Actuation input
+        ax2 = subplot(2, nSim, i + nSim);
+        u = K * x';  % Ensure matrix multiplication is correct
+        plot(t, u, 'LineWidth', 1.5)
+        title(sprintf("Simulation %d Actuation, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
+        xlabel('Time (s)')
+        ylabel('u(t)')
+        grid on;
+        xlim([0 t(end)]);
+        ax2_all = [ax2_all, ax2];  % Store handle
     end
     
+    % Link x-axes for better visualization
+    linkaxes([ax1_all, ax2_all], 'x');
+
+
+
+    % figure('Position', [100, 100, 1600, 800]);
+    % for i = 1:size(initial_conditions,1)
+    % 
+    % 
+    %     x0 = initial_conditions(i, :).';
+    %     [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
+    % 
+    % 
+    %     subplot(2,2,i)
+    %     yyaxis left
+    %     plot(t, x(:,1)*100, 'LineWidth', 1.5) % s is the first state, in cm now
+    %     ylabel('s (cm)')
+    % 
+    %     yyaxis right
+    %     plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
+    %     ylabel('\phi (deg)')
+    % 
+    %     title(sprintf('Initial Condition %d', i))
+    %     xlabel('Time (s)')
+    %     grid on;
+    %     legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+    % end
+    % 
     sgtitle('B3) Nonlinear System Responses: Displacement and Angle')
     saveas(gcf, '../figures/Nonliner_System_Responces_x.png');
 
 
 
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
-
-        x0 = initial_conditions(i, :).';   
-        [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
-        
-
-        subplot(2,2,i)
-        yyaxis left
-        plot(t, x(:,2)*100, 'LineWidth', 1.5)
-        ylabel('Linear Velocity (cm/s)')
-
-        yyaxis right
-        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5)
-        ylabel('Angular Velocity (deg/s)')
-        
-        title(sprintf('Initial Condition %d', i))
-        xlabel('Time (s)')
-        grid on;
-        legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-    end
-    
-    sgtitle('B5) Nonlinear System Responses: Angular and Linear Velocities')
-    saveas(gcf, '../figures/Nonlinear_System_Responces_v.png');
+    % figure('Position', [100, 100, 1600, 800]);
+    % for i = 1:size(initial_conditions,1)
+    % 
+    %     x0 = initial_conditions(i, :).';   
+    %     [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
+    % 
+    % 
+    %     subplot(2,2,i)
+    %     yyaxis left
+    %     plot(t, x(:,2)*100, 'LineWidth', 1.5)
+    %     ylabel('Linear Velocity (cm/s)')
+    % 
+    %     yyaxis right
+    %     plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5)
+    %     ylabel('Angular Velocity (deg/s)')
+    % 
+    %     title(sprintf('Initial Condition %d', i))
+    %     xlabel('Time (s)')
+    %     grid on;
+    %     legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+    % end
+    % 
+    % sgtitle('B3) Nonlinear System Responses: Angular and Linear Velocities')
+    % saveas(gcf, '../figures/Nonlinear_System_Responces_v.png');
 
 end
 

@@ -7,13 +7,13 @@ part_a;
 load_variables;
 
 plot_B2 = true;
-plot_B3 = false;
-plot_B4 = false;
-plot_B5 = false;
-plot_B7 = false;
-plot_B8 = false;
-plot_B9 = false;
-plot_B10 = false;
+plot_B3 = true;
+plot_B4 = true;
+plot_B5 = true;
+plot_B7 = true;
+plot_B8 = true;
+plot_B9 = true;
+plot_B10 = true;
 
 %                      s     sdot   phi     dphi
 initial_conditions = [ 0,   0,     0.00001,      0;
@@ -31,15 +31,8 @@ tspan = [0 10];
 
 %% B1 B2
 %  Design a state feedback controller u(t) = Kx(t) which stabilizes the linearized system (2) in x(t) = 0. Comment your design
-syms k_1 k_2 k_3 k_4 s
-% K = [k_1, k_2, k_3, k_4];
-% A_prime = A - (B * K);
-% A_prime = subs(A_prime, "F", F);
-% A_prime = subs(A_prime, "g", g);
-% A_prime = subs(A_prime, "M", M);
-% A_prime = subs(A_prime, "L", L);
-% 
-% [vec, vals] = eig(A_prime);
+
+
 
 A_val_sym = subs(A, [F, g, M, L], [F_val, g_val, M_val, L_val]);
 B_val_sym = subs(B, [M, L], [M_val, L_val]);
@@ -50,6 +43,7 @@ B_val = double(B_val_sym);
 % poles = [-1, -190, -54, -20]
 % poles = [-1, -2, -4, -8];
 poles=[-0.5,-1,-1.5,-2];
+% toOverleaf(P==poles, "poles");
 K = place(A_val, B_val, poles);
 
 A_cl = A_val - B_val*K;
@@ -58,58 +52,113 @@ A_cl = A_val - B_val*K;
 
 
 if plot_B2
+
+    figure('Position', [100, 100, 2200, 800]);
+    nSim = size(initial_conditions, 1);
     
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
-    
+    for i = 1:nSim
+
+
+
         x0 = initial_conditions(i, :).';
-        [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
-    
-        subplot(2,2,i)       
+        t_total = [];
+        x_total = [];
+        t_u = []; 
+        u_total = []; 
+        
+        t_offset = 0;
+        T_final = tspan(end); 
+        N_intervals = ceil(T_final / Ts);
+        
+        for k = 1:N_intervals
+
+            u = -Kd * x0;
+            [t_interval, x_interval] = ode45(@(t, x) state_update(x, u), [0 Ts], x0);
+           
+            t_interval = t_interval + t_offset;
+
+            t_total = [t_total; t_interval];
+            x_total = [x_total; x_interval];
+
+            t_u = [t_u; t_offset; t_offset + Ts];
+            u_total = [u_total; u; u];
+
+            x0 = x_interval(end, :)';
+        
+            t_offset = t_offset + Ts;
+        end
+      
+        ax1 = subplot(2, nSim, i);
         yyaxis left
-        plot(t, x(:,1)*100, 'LineWidth', 1.5)
-        ylabel('Displacement (cm)')
-        
+        plot(t_total, x_total(:,1)*100, '-', 'LineWidth', 1.5)
+        ylabel('s (cm)')
         yyaxis right
-        plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5)
+        plot(t_total, x_total(:,3)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('\phi (deg)')
-        
-        title(sprintf('Initial Condition %d', i))
+        title(sprintf('IC %d State', i))
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-    end
-    
-    sgtitle('Continuous Time System Responses: Displacement and Angle')
-    saveas(gcf, '../figures/Continuous_Time_System_Responses_x.png');
-
-
-    figure('Position', [100, 100, 1600, 800]);
-    for i = 1:size(initial_conditions,1)
-        % Get the i-th initial condition (row vector)
-        x0 = initial_conditions(i, :).';
-        
-        % Simulate the closed-loop system using ode45
-        [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
-        
-        % Create subplot for this simulation
-        subplot(2,2,i)
-        
-        % Plot s (position) on the left y-axis, convert to cm (multiply by 100)
-        yyaxis left
-        plot(t, x(:,2)*100, 'LineWidth', 1.5) % s is the first state, in cm now
-        ylabel('Linear Velocity (cm/s)')
-        
-        % Plot phi (angle) on the right y-axis (converted to degrees)
-        yyaxis right
-        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
-        ylabel('Angular Velocity (deg/s)')
-        
-        title(sprintf('Initial Condition %d', i))
+        xlim([0 T_final]); 
+        ax2 = subplot(2, nSim, i+nSim);
+        stairs(t_u, u_total, 'LineWidth', 1.5)
+        title(sprintf('IC %d Actuation', i))
         xlabel('Time (s)')
+        ylabel('u(t)')
         grid on;
-        legend('s (cm/s)', '\phi (deg/s)', 'Location', 'Best')
+        xlim([0 T_final]);
+
+        linkaxes([ax1, ax2], 'x');
     end
+
+    % 
+    % figure('Position', [100, 100, 1600, 800]);
+    % for i = 1:size(initial_conditions,1)
+    % 
+    %     x0 = initial_conditions(i, :).';
+    %     [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
+    % 
+    %     subplot(2,2,i)       
+    %     yyaxis left
+    %     plot(t, x(:,1)*100, 'LineWidth', 1.5)
+    %     ylabel('Displacement (cm)')
+    % 
+    %     yyaxis right
+    %     plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5)
+    %     ylabel('\phi (deg)')
+    % 
+    %     title(sprintf('Initial Condition %d', i))
+    %     xlabel('Time (s)')
+    %     grid on;
+    %     legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+    % end
+    % 
+    % sgtitle('Continuous Time System Responses: Displacement and Angle')
+    % saveas(gcf, '../figures/Continuous_Time_System_Responses_x.png');
+    % 
+    % 
+    % figure('Position', [100, 100, 1600, 800]);
+    % for i = 1:size(initial_conditions,1)
+    % 
+    %     x0 = initial_conditions(i, :).';
+    %     [t, x] = ode45(@(t, x) A_cl*x, tspan, x0);
+    % 
+    % 
+    %     subplot(2,2,i)
+    % 
+    % 
+    %     yyaxis left
+    %     plot(t, x(:,2)*100, 'LineWidth', 1.5)
+    %     ylabel('Linear Velocity (cm/s)')
+    % 
+    %     yyaxis right
+    %     plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5) 
+    %     ylabel('Angular Velocity (deg/s)')
+    %     title(sprintf('Initial Condition %d', i))
+    %     xlabel('Time (s)')
+    %     grid on;
+    %     legend('s (cm/s)', '\phi (deg/s)', 'Location', 'Best')
+    % end
     
     sgtitle('B3) Continuous Time System Responses: Linear and Angular Velocities')
     saveas(gcf, '../figures/Continuous_Time_System_Responses_v.png');
@@ -121,22 +170,17 @@ end
 if plot_B3
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-        % Get the i-th initial condition (row vector)
+
+
         x0 = initial_conditions(i, :).';
-        
-        % Simulate the nonlinear system using ode45 with state_update(x,u)
-        % Here u = K*x (closed-loop control law)
         [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
         
-        % Create subplot for this simulation
+
         subplot(2,2,i)
-        
-        % Plot s (position) on the left y-axis, convert to cm (multiply by 100)
         yyaxis left
         plot(t, x(:,1)*100, 'LineWidth', 1.5) % s is the first state, in cm now
         ylabel('s (cm)')
-        
-        % Plot phi (angle) on the right y-axis (converted to degrees)
+
         yyaxis right
         plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
         ylabel('\phi (deg)')
@@ -150,26 +194,22 @@ if plot_B3
     sgtitle('B3) Nonlinear System Responses: Displacement and Angle')
     saveas(gcf, '../figures/Nonliner_System_Responces_x.png');
 
+
+
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-        % Get the i-th initial condition (row vector)
-        x0 = initial_conditions(i, :).';
-        
-        % Simulate the nonlinear system using ode45 with state_update(x,u)
-        % Here u = K*x (closed-loop control law)
+
+        x0 = initial_conditions(i, :).';   
         [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
         
-        % Create subplot for this simulation
+
         subplot(2,2,i)
-        
-        % Plot s (position) on the left y-axis, convert to cm (multiply by 100)
         yyaxis left
-        plot(t, x(:,2)*100, 'LineWidth', 1.5) % s is the first state, in cm now
+        plot(t, x(:,2)*100, 'LineWidth', 1.5)
         ylabel('Linear Velocity (cm/s)')
-        
-        % Plot phi (angle) on the right y-axis (converted to degrees)
+
         yyaxis right
-        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
+        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('Angular Velocity (deg/s)')
         
         title(sprintf('Initial Condition %d', i))
@@ -198,7 +238,7 @@ end
 % LECTURE 6
 % LECTURE 7 SLIDE 17/19
 
-
+part_b_4;
 Ts = 0.5;
 
 
@@ -249,28 +289,25 @@ if plot_B7
     
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-        % Get the i-th initial condition (row vector)
+
+
         state = initial_conditions(i, :).';  % Column vector
-        
-        % Time parameters
-        t_sim = tspan(1):Ts:tspan(end);  % Discrete time steps based on Ts
-        x_hist = zeros(4, length(t_sim));  % Store state history
+
+        t_sim = tspan(1):Ts:tspan(end);
+        x_hist = zeros(4, length(t_sim)); 
         
         % Simulate the discrete-time system
         for idx = 1:length(t_sim)
-            x_hist(:, idx) = state;  % Store current state
-            state = A_d_cl*(state);  % Update state using discrete equation x(k+1) = A(x_k)
+            x_hist(:, idx) = state;
+            state = A_d_cl*(state);
         end
         
-        % Create subplot for this simulation
+
         subplot(2,2,i)
-        
-        % Plot s (position) on the left y-axis, convert to cm (multiply by 100)
         yyaxis left
         plot(t_sim, x_hist(1, :)*100, 'o-', 'LineWidth', 1.5, 'MarkerSize', 4) % Discrete points
         ylabel('s (cm)')
-        
-        % Plot phi (angle) on the right y-axis (converted to degrees)
+
         yyaxis right
         plot(t_sim, x_hist(3, :)*180/pi, 's--', 'LineWidth', 1.5, 'MarkerSize', 4) % Discrete points
         ylabel('\phi (deg)')
@@ -287,30 +324,27 @@ if plot_B7
 
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-        % Get the i-th initial condition (row vector)
-        state = initial_conditions(i, :).';  % Column vector
+
+
+        state = initial_conditions(i, :).';
         
-        % Time parameters
-        t_sim = tspan(1):Ts:tspan(end);  % Discrete time steps based on Ts
-        x_hist = zeros(4, length(t_sim));  % Store state history
-        
-        % Simulate the discrete-time system
+
+        t_sim = tspan(1):Ts:tspan(end);
+        x_hist = zeros(4, length(t_sim));
+
         for idx = 1:length(t_sim)
-            x_hist(:, idx) = state;  % Store current state
-            state = A_d_cl*(state);  % Update state using discrete equation x(k+1) = A(x_k)
+            x_hist(:, idx) = state; 
+            state = A_d_cl*(state); 
         end
         
-        % Create subplot for this simulation
+
         subplot(2,2,i)
-        
-        % Plot s (position) on the left y-axis, convert to cm (multiply by 100)
         yyaxis left
-        plot(t_sim, x_hist(2, :)*100, 'o-', 'LineWidth', 1.5, 'MarkerSize', 4) % Discrete points
+        plot(t_sim, x_hist(2, :)*100, 'o-', 'LineWidth', 1.5, 'MarkerSize', 4)
         ylabel('Linear Velocity (cm/s)')
-        
-        % Plot phi (angle) on the right y-axis (converted to degrees)
+
         yyaxis right
-        plot(t_sim, x_hist(4, :)*180/pi, 's--', 'LineWidth', 1.5, 'MarkerSize', 4) % Discrete points
+        plot(t_sim, x_hist(4, :)*180/pi, 's--', 'LineWidth', 1.5, 'MarkerSize', 4)
         ylabel('Angular Velocity (deg/s)')
         
         title(sprintf('Initial Condition %d', i))
@@ -335,51 +369,41 @@ end
 %  the plots and compare with the results of point B5.
 
 if plot_B8
-    figure('Position', [100, 100, 1600, 800]);
+    figure('Position', [100, 100, 2200, 800]);
     nSim = size(initial_conditions, 1);
     
     for i = 1:nSim
-        % Get the i-th initial condition (as a column vector)
+
+
+
         x0 = initial_conditions(i, :).';
-        
-        % Initialize storage for global time, state trajectories, and control history
         t_total = [];
         x_total = [];
-        t_u = [];       % time vector for control signal (for zero order hold)
-        u_total = [];   % corresponding control values
+        t_u = []; 
+        u_total = []; 
         
         t_offset = 0;
-        T_final = tspan(end);  % Final simulation time from tspan
+        T_final = tspan(end); 
         N_intervals = ceil(T_final / Ts);
         
         for k = 1:N_intervals
-            % Update control input at the beginning of the interval
+
             u = -Kd * x0;
-            
-            % Simulate system dynamics over [0, Ts] with constant u.
             [t_interval, x_interval] = ode45(@(t, x) state_update(x, u), [0 Ts], x0);
-            
-            % Adjust time vector to reflect overall simulation time
+           
             t_interval = t_interval + t_offset;
-            
-            % Append simulation results
+
             t_total = [t_total; t_interval];
             x_total = [x_total; x_interval];
-            
-            % Build the control history using a zero order hold:
-            % The control value u is held constant from t_offset to t_offset+Ts.
+
             t_u = [t_u; t_offset; t_offset + Ts];
             u_total = [u_total; u; u];
-            
-            % Update initial condition for next interval
+
             x0 = x_interval(end, :)';
-            
-            % Increase the global time offset by Ts
+        
             t_offset = t_offset + Ts;
         end
-        
-        % Create subplots for each simulation result.
-        % Top subplot for state trajectories.
+      
         ax1 = subplot(2, nSim, i);
         yyaxis left
         plot(t_total, x_total(:,1)*100, '-', 'LineWidth', 1.5)
@@ -391,23 +415,20 @@ if plot_B8
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-        xlim([0 T_final]);  % Set same time axis
-        
-        % Bottom subplot for actuation u(t) using a zero order hold (stairs)
+        xlim([0 T_final]); 
         ax2 = subplot(2, nSim, i+nSim);
         stairs(t_u, u_total, 'LineWidth', 1.5)
         title(sprintf('IC %d Actuation', i))
         xlabel('Time (s)')
         ylabel('u(t)')
         grid on;
-        xlim([0 T_final]);  % Set same time axis
-        
-        % Link the vertical subplots so that they share the same x-axis
+        xlim([0 T_final]);
+
         linkaxes([ax1, ax2], 'x');
     end
     
     sgtitle('B8) Continuous-Time System with Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/ Continuous_Time_Discrete_Actuation.png');
+    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation.png');
 end
 
 
@@ -467,7 +488,7 @@ if plot_B9
     end
 
        sgtitle('B9) Discrete-Time System Responses Using an Optimal Controller: s (cm) and \phi (deg)')
-       saveas(gcf, '../figures/ Continuous_Time_Discrete_Actuation_Optimal.png');
+       saveas(gcf, '../figures/Discrete_Time_Discrete_Actuation_Optimal.png');
     
 end
 
@@ -513,7 +534,7 @@ end
 
 if plot_B10
 
-    figure('Position', [100, 100, 1600, 800]);
+    figure('Position', [100, 100, 2200, 800]);
     nSim = size(initial_conditions, 1);
     
     for i = 1:nSim
@@ -527,41 +548,31 @@ if plot_B10
         
         t_total = [];
         x_total = [];
-        t_u = [];       % time vector for control signal (for zero order hold)
-        u_total = [];   % corresponding control values
+        t_u = [];
+        u_total = [];
         
         t_offset = 0;
-        T_final = tspan(end);  % Final simulation time from tspan
+        T_final = tspan(end);
         N_intervals = ceil(T_final / Ts);
         
         for k = 1:N_intervals
-            % Update control input at the beginning of the interval
             u = -Kd_star * x0;
             
-            % Simulate system dynamics over [0, Ts] with constant u.
             [t_interval, x_interval] = ode45(@(t, x) state_update(x, u), [0 Ts], x0);
-            
-            % Adjust time vector to reflect overall simulation time
             t_interval = t_interval + t_offset;
-            
-            % Append simulation results
+
             t_total = [t_total; t_interval];
             x_total = [x_total; x_interval];
-            
-            % Build the control history using a zero order hold:
-            % The control value u is held constant from t_offset to t_offset+Ts.
+
             t_u = [t_u; t_offset; t_offset + Ts];
             u_total = [u_total; u; u];
-            
-            % Update initial condition for next interval
+
             x0 = x_interval(end, :)';
             
-            % Increase the global time offset by Ts
+
             t_offset = t_offset + Ts;
         end
-        
-        % Create subplots for each simulation result.
-        % Top subplot for state trajectories.
+
         ax1 = subplot(2, nSim, i);
         yyaxis left
         plot(t_total, x_total(:,1)*100, '-', 'LineWidth', 1.5)
@@ -573,29 +584,25 @@ if plot_B10
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-        xlim([0 T_final]);  % Set same time axis
+        xlim([0 T_final]);
         
-        % Bottom subplot for actuation u(t) using a zero order hold (stairs)
+
         ax2 = subplot(2, nSim, i+nSim);
         stairs(t_u, u_total, 'LineWidth', 1.5)
         title(sprintf('IC %d Actuation', i))
         xlabel('Time (s)')
         ylabel('u(t)')
         grid on;
-        xlim([0 T_final]);  % Set same time axis
+        xlim([0 T_final]);
         
-        % Link the vertical subplots so that they share the same x-axis
+
         linkaxes([ax1, ax2], 'x');
     end
     
     sgtitle('B10) Continuous-Time System with an Optimal Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/ Continuous_Time_Discrete_Actuation.png');
+    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation_Optimal.png');
 end
 
-
-
-%% B11
-% Draw some final general conclusions on the importance of the choice of the sampling time T
 
 
 
