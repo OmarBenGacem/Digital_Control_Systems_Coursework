@@ -55,14 +55,17 @@ Observability_Matrix = [C ; C*A];
 Linear_Dynamics = [A , B ; C , D];
 
 
-
-toOverleaf(Reachability_Matrix, "reachability");
-toOverleaf(Observability_Matrix, "observability");
-toOverleaf(Linear_Dynamics, "linear_dynamics");
-toOverleaf(det(Reachability_Matrix),"reachability_det", "det(R)")
+toOverleaf(eye(2), "test", true)
+toOverleaf(A, "A", true);
+toOverleaf(B, "B", true);
+% toOverleaf(Reachability_Matrix, "reachability", true);
+% toOverleaf(Observability_Matrix, "observability", true);
+toOverleaf(Reachability_Matrix, "reachability", true);
+toOverleaf(Observability_Matrix, "observability", true);
+toOverleaf(Linear_Dynamics, "linear_dynamics", true);
+toOverleaf(det(Reachability_Matrix),"reachability_det", false)
 % toOverleaf(det(Observability_Matrix),"observability_det")
-toOverleaf(A, "A");
-toOverleaf(B, "B");
+
 % toOverleaf(C, "C");
 % toOverleaf(D, "D");
 

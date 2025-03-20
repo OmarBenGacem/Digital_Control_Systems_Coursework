@@ -49,7 +49,8 @@ K = place(A_val, B_val, poles);
 A_cl = A_val - B_val*K;
 
 
-
+toOverleaf(poles, "poles", true)
+toOverleaf(K, "K", true)
 
 if plot_B2
 
@@ -290,6 +291,12 @@ Bd = integral( @(tau) expm(A_val * (Ts - tau)  ) * B_val, 0, Ts, 'ArrayValued', 
 Cd = C;
 Dd = D;
 
+toOverleaf(Ad, "Ad", true);
+toOverleaf(Bd, "Bd", true);
+toOverleaf(Cd, "Cd", true)
+toOverleaf(Dd, "Dd", true);
+
+
 %% B7
 %  Design a discrete-time state feedback control law u(k) = Kdx(k) such that the closed-loop associated
 %  to the discretized linearized system computed in point B6 is asymptotically stable (Hint: place the
@@ -300,7 +307,7 @@ Dd = D;
 Kd = sym("Kd", [1,4]);
 poles_discrete = exp(poles * Ts);
 Kd = place(Ad, Bd, poles_discrete);
-
+toOverleaf(Kd, "Kd", true)
 
 % Kd = K * eye(size(A_val))
 % A_d_cl = expm((A_val - B_val * Kd) * Ts); 

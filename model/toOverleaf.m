@@ -22,29 +22,16 @@ function toOverleaf(eq, fileName, ismatrix, varargin)
 
 
     if ismatrix
-        disp(mattex(eq))
-        fprintf(fid, mattex(eq));
+        mattex(eq, fid)
+        % fprintf(fid, mattex(eq));
 
     else
 
         eqLatex = latex(eq);
         eqLatex = strrep(eqLatex, '\,', '');
 
-        if nargin == 3
-        
-            thirdArg = varargin{1};
-            if isstring(thirdArg)
-                thirdArg = char(thirdArg);
-            end
-            % fprintf(fid, '\\begin{equation}\n%s = %s\n\\end{equation}\n', thirdArg, eqLatex);
-            fprintf(fid, '\\n%s = %s\n\\n', thirdArg, eqLatex);
-            % fprintf(fid, 'third_arg = %s\n\n', thirdArg);
-        else
-            
-            % fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-            fprintf(fid, '\\n%s\n\\n', eqLatex);
+        fprintf(fid, '\\n%s\n\\n', eqLatex);
     
-        end
     end
 
     fclose(fid);
@@ -52,28 +39,56 @@ function toOverleaf(eq, fileName, ismatrix, varargin)
 
 end
 
-function s = mattex(M)
-    %% Convert MATLAB matrix to LaTeX bmatrix format
-    [m, n] = size(M);  % Get matrix dimensions
+function [] = mattex(M, fid, frmt)
+    
+    %% https://uk.mathworks.com/matlabcentral/fileexchange/135251-matrix-to-latex
 
-    % Create first line
-    s = sprintf('\\begin{bmatrix}\n');  
+    % MAT2LATEX(M) displays the latex code for the numerical 2D matrix M in the
+    % command window.
+    %
+    % MAT2LATEX(M, frmt) displays the latex code for the numerical 2D matrix M 
+    % in the command window, using frmt, e.g. '%0.2E', as a format specifier 
+    % for the matrix content. Default value of frmt is '%0.4f'.
+    %
+    % Created on Sep. 2023, by Ahmed Mahfouz, in Luxembourg.
+    if ~exist("frmt", 'var')
+        frmt = '%0.4f';
+    end
 
-    % Add matrix content
-    for k = 1:m
-        for l = 1:n
-            s = sprintf('%s %6.3f', s, M(k, l)); % Print 3 decimal places
-            if l < n
-                s = sprintf('%s &', s); % Add '&' separator between columns
+    % Validate format specifier
+    matlabFormatPattern = '^%[-\+]?[0-9]*\.?[0-9]*[bcdeEfFgGosuxX]$';
+    if isempty(regexp(frmt, matlabFormatPattern, 'once'))
+        error('Invalid format specifier. Please use a valid MATLAB format specifier.\n');
+    end
+    
+    % if class(M) == 'symfun'
+    if isa(M, 'symfun')
+        M = formula(M);
+    end
+
+    
+    [nrows, ncols] = size(M);
+    fprintf(fid, '\\begin{bmatrix}\n');
+
+    for k = 1:nrows
+        for l = 1:ncols
+            if isa(M(k,1), 'sym')
+                fprintf(fid, char(M(k,1)));
+            else
+                fprintf(fid, frmt, M(k, l)); 
+            end
+            if l < ncols
+                fprintf(fid, ' & '); 
             end
         end
-        if k < m
-            s = sprintf('%s \\\\\n', s);  % Add double backslash for new row
+        if k < nrows
+            fprintf(fid, ' \\\\\n');
         else
-            % s = sprintf('%s\n', s);
+            fprintf(fid, '\n');
         end
     end
 
-    % Add last line
-    s = sprintf('%s\\end{bmatrix}\n', s);
+    fprintf(fid, '\\end{bmatrix}\n');
+
 end
+
