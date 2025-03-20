@@ -30,7 +30,7 @@ function toOverleaf(eq, fileName, ismatrix, varargin)
         eqLatex = latex(eq);
         eqLatex = strrep(eqLatex, '\,', '');
 
-        fprintf(fid, '\\n%s\n\\n', eqLatex);
+        fprintf(fid, eqLatex);
     
     end
 
@@ -72,8 +72,10 @@ function [] = mattex(M, fid, frmt)
 
     for k = 1:nrows
         for l = 1:ncols
-            if isa(M(k,1), 'sym')
-                fprintf(fid, char(M(k,1)));
+            if isa(M(k,l), 'sym')
+                new_str = char(M(k,l));
+                new_str = strrep(new_str, '*', '');
+                fprintf(fid, new_str);
             else
                 fprintf(fid, frmt, M(k, l)); 
             end

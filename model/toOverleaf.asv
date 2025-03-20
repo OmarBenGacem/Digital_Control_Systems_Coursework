@@ -1,4 +1,4 @@
-function toOverleaf(eq, fileName, varargin)
+function toOverleaf(eq, fileName, ismatrix, varargin)
 
 
     % Check input arguments
@@ -11,28 +11,27 @@ function toOverleaf(eq, fileName, varargin)
     end
     targetFolder = fullfile(pwd, '..', 'equations');
   
-    eqLatex = latex(eq);
-    eqLatex = strrep(eqLatex, '\,', '');
+
     
     fullFileName = fullfile(targetFolder, [fileName, '.tex']);
     fid = fopen(fullFileName, 'w');
+
     if fid == -1
         error('Could not open or create file %s for writing.', fullFileName);
     end
-    if nargin == 3
 
-        thirdArg = varargin{1};
-        if isstring(thirdArg)
-            thirdArg = char(thirdArg);
-        end
-        % fprintf(fid, '\\begin{equation}\n%s = %s\n\\end{equation}\n', thirdArg, eqLatex);
-        fprintf(fid, '\\n%s = %s\n\\n', thirdArg, eqLatex);
-        % fprintf(fid, 'third_arg = %s\n\n', thirdArg);
+
+    if ismatrix
+        mattex(eq, fid)
+        % fprintf(fid, mattex(eq));
+
     else
-        
-        % fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-        fprintf(fid, '\\n%s\n\\n', eqLatex);
 
+        eqLatex = latex(eq);
+        eqLatex = strrep(eqLatex, '\,', '');
+
+        fprintf(fid, eqLatex);
+    
     end
 
     fclose(fid);
@@ -40,4 +39,58 @@ function toOverleaf(eq, fileName, varargin)
 
 end
 
+function [] = mattex(M, fid, frmt)
+    
+    %% https://uk.mathworks.com/matlabcentral/fileexchange/135251-matrix-to-latex
+
+    % MAT2LATEX(M) displays the latex code for the numerical 2D matrix M in the
+    % command window.
+    %
+    % MAT2LATEX(M, frmt) displays the latex code for the numerical 2D matrix M 
+    % in the command window, using frmt, e.g. '%0.2E', as a format specifier 
+    % for the matrix content. Default value of frmt is '%0.4f'.
+    %
+    % Created on Sep. 2023, by Ahmed Mahfouz, in Luxembourg.
+    if ~exist("frmt", 'var')
+        frmt = '%0.4f';
+    end
+
+    % Validate format specifier
+    matlabFormatPattern = '^%[-\+]?[0-9]*\.?[0-9]*[bcdeEfFgGosuxX]$';
+    if isempty(regexp(frmt, matlabFormatPattern, 'once'))
+        error('Invalid format specifier. Please use a valid MATLAB format specifier.\n');
+    end
+    
+    % if class(M) == 'symfun'
+    if isa(M, 'symfun')
+        M = formula(M);
+    end
+
+    
+    [nrows, ncols] = size(M);
+    fprintf(fid, '\\begin{bmatrix}\n');
+
+    for k = 1:nrows
+        for l = 1:ncols
+            if isa(M(k,l), 'sym')
+                new_str = char(M(k,l));
+                new_str = strrep(new_str, '\,', '');
+                fprintf(fid, new_str);
+            else
+                fprintf(fid, frmt, M(k, l)); 
+            end
+            if l < ncols
+                fprintf(fid, ' & '); 
+            end
+        end
+        if k < nrows
+            fprintf(fid, ' \\\\\n');
+        else
+            fprintf(fid, '\n');
+        end
+    end
+
+    fprintf(fid, '\\end{bmatrix}\n');
+
+end
 
