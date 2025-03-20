@@ -25,13 +25,11 @@ function toOverleaf(eq, fileName, varargin)
         if isstring(thirdArg)
             thirdArg = char(thirdArg);
         end
-        % fprintf(fid, '\\begin{equation}\n%s = %s\n\\end{equation}\n', thirdArg, eqLatex);
-        fprintf(fid, '\\n%s = %s\n\\n', thirdArg, eqLatex);
+        % fprintf(fid, '\\begin{equation}\n%s = %s\n\\end{equation}\n', thirdArg, eqLatex);#
         % fprintf(fid, 'third_arg = %s\n\n', thirdArg);
     else
         
         fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-        fprintf(fid, '\\n%s\n\\n', eqLatex);
 
     end
 
