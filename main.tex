@@ -91,10 +91,23 @@ This can be put into full state space representation as shown in Equation \ref{l
 \input{equations/full_ss}
 
 \subsection{A4) Linear Dynamics}
-The  
+The system has output function of the states, but not their velocities.This means that output $\underline{y}(t)=[s(t), \phi(t)]^T$. To achieve this, output equation $\underline{y}(t)=C\underline{x}+D\underline{u}$. It is trivial to show that $D$ is the zero vector, and C is a $2\times4$ vector with  the value $1$ in position $C_{1,1}$ and $C_{2,3}$, and the rest being zero. This gives the linear dynamics state space representation as shown in Equation \ref{lindy}
+
+\input{equations/lindy}
 
 \subsection{A5) Reachability}
+The reachability matrix is used to determine if all possible states are reachable given the dynamics of the system. If the reachability matrix is full rank, then it can be determined that the system has a possible feedback loop that can stabilize it. Equation \ref{reach} shows the reachability matrix, that was derived using the matrices found in Equations \ref{jacobian} and \ref{jB}.
+
+\input{equations/reach}
+
+It is trivial to see that this matrix is full rank, however to confirm, the determinant of the reachability matrix can be shown to be $det\input{equations/reachability_det}$. Thus for any non-zero gravity, pendulum length, or cart mass, this system will be full rank, and thus reachable.
 
 \subsection{A6) Observability}
+Similarly to the reachability matrix, the observability matrix gives insight into if the system's ability to identify it's own state for use in feedback. Equation 
+\input{equations/obsv}
+
+
+\section{Computational Simulations}
+
 
 \end{document}
