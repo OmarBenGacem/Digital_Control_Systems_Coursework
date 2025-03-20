@@ -56,10 +56,10 @@ Linear_Dynamics = [A , B ; C , D];
 
 
 
-toOverleaf(Reachability_Matrix, "reachability");
-toOverleaf(Observability_Matrix, "observability");
+toOverleaf(Reachability_Matrix, "reachability", "R");
+toOverleaf(Observability_Matrix, "observability", "O");
 toOverleaf(Linear_Dynamics, "linear_dynamics");
-toOverleaf(det(Reachability_Matrix),"reachability_det")
+toOverleaf(det(Reachability_Matrix),"reachability_det", "det(R)")
 % toOverleaf(det(Observability_Matrix),"observability_det")
 toOverleaf(A, "A");
 toOverleaf(B, "B");
@@ -67,23 +67,3 @@ toOverleaf(B, "B");
 % toOverleaf(D, "D");
 
 
-
-
-function toOverleaf(eq, fileName)
-
-    if isstring(fileName)
-        fileName = char(fileName);
-    end
-    targetFolder = fullfile(pwd, '..', 'equations');
-  
-    eqLatex = latex(eq);
-
-    fullFileName = fullfile(targetFolder, [fileName, '.tex']);
-    fid = fopen(fullFileName, 'w');
-    if fid == -1
-        error('Could not open or create file %s for writing.', fullFileName);
-    end
-    fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-    fclose(fid);
-
-end
