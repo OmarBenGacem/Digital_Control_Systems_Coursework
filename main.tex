@@ -56,8 +56,8 @@
 \begin{document}
 
 
-\section*{Executive Summary}
-\input{equations/reachability}
+% \section*{Executive Summary}
+% \input{equations/reachability}
 
 
 \section{System Dynamics (Part A)}
@@ -65,19 +65,19 @@ The system being modeled is an inverted pendulum attached to a sliding cart. The
 
 \input{equations/equations_of_motion}
 
-\subsection{A1) Standard Form}
+\subsection*{A1) Standard Form}
 To write the cart-pendulum system in standard form, the state variable $\underline{x}$ and the input $\underline{u}$ must be identified. The applied force $\mu(t)$ acts as the only input to this system. By inspection of the equations of motion, it is trivial to show that displacement $s$ and angle $\phi$ both have first- and second-order differential terms, thus making state variable $\underline{x} = [s, \dot s, \phi, \dot\phi]^T$. Equation \ref{eqofm} can be rearranged and reduced to give Equation \ref{fofx} which acts as the state update function.
 
 \input{equations/f_of_x}
 
-\subsection{A2) Free Response Equilibrium}
+\subsection*{A2) Free Response Equilibrium}
 Setting $u=\mu(t)=0$ gives the free response of the system, where the equilibrium of this system are values of $\underline{\dot x}=\underline{0}$. The values of $\underline{x}$ that satisfy this criteria are shown below in Equation \ref{ueqzero}.
 
 \input{equations/ueqzero}
 
 Equation \ref{fofx} shows that the displacement of the cart, $s$, has no impact on the systems ability to reach equilibrium. Thus the possible values of $s$ is determined to be the set of real numbers. In practice, it is bounded to be a reasonable amount of translational motion. The values of $\phi$ is set to be any period of $\pi$, meaning the pendulum is either vertically up or down. 
 
-\subsection{A3) Linearization About an Equilibrium}
+\subsection*{A3) Linearization About an Equilibrium}
 Given a point to linearize about, the state space model of the non-linear system $f(\underline{x},\underline{u})$ can be derived using the Jacobian operator to give the Jacobian matrix. The linearization should yeild an equation of the form $\dot x = Ax+Bu$. Equation \ref{jacobian} shows the taking of the Jacobian vector at the point $\underline{x}=\underline{0}$, to get the matrix $A$.
 
 \input{equations/jacobian}
@@ -90,11 +90,49 @@ To find matrix $B$, the Jacobian is taken again, however, this time with respect
 This can be put into full state space representation as shown in Equation \ref{linized}. This gives the full state-space representation of the cart-pendulum system, and can be used to describe the local behavior of the system. about the point the equilibrium was taken.
 \input{equations/full_ss}
 
-\subsection{A4) Linear Dynamics}
-The  
+\subsection*{A4) Linear Dynamics}
+The system has output function of the states, but not their velocities.This means that output $\underline{y}(t)=[s(t), \phi(t)]^T$. To achieve this, output equation $\underline{y}(t)=C\underline{x}+D\underline{u}$. It is trivial to show that $D$ is the zero vector, and C is a $2\times4$ vector with  the value $1$ in position $C_{1,1}$ and $C_{2,3}$, and the rest being zero. This gives the linear dynamics state space representation as shown in Equation \ref{lindy}
 
-\subsection{A5) Reachability}
+\input{equations/lindy}
 
-\subsection{A6) Observability}
+\subsection*{A5) Reachability}
+The reachability matrix is used to determine if all possible states are reachable given the dynamics of the system. If the reachability matrix is full rank, then it can be determined that the system has a possible feedback loop that can stabilize it. Equation \ref{reach} shows the reachability matrix, that was derived using the matrices found in Equations \ref{jacobian} and \ref{jB}.
+
+\input{equations/reach}
+
+It is trivial to see that this matrix is full rank, however to confirm, the determinant of the reachability matrix can be shown to be $det\input{equations/reachability_det}$. Thus for any non-zero gravity, pendulum length, or cart mass, this system will be full rank, and thus reachable.
+
+\subsection*{A6) Observability}
+Similarly to the reachability matrix, the observability matrix gives insight into if the system's ability to identify it's own state for use in feedback. Equation \ref{obsv} shows the observability matrix and it's definition. Without proof, it can be trivially shown that this is a full rank matrix, making the cart-pendulum system fully observable.
+\input{equations/obsv}
+
+
+\section{Computational Simulations (Part B)}
+
+
+\subsection*{B1) Linear Time Feedback Controller}
+A full state feedback controller of the form $u=Kx$ was designed to control the system back to the state $\underline{x}=\underline{0}$. With this specific controller configuration, the state update equation can be simplified to the below expression.
+
+\begin{equation}\label{new_state_eq}
+    \dot x = Ax+Bu = Ax+B(Kx) = (A+BK)x   \Rightarrow   x(t)=e^{A+BK}x(0)
+\end{equation}
+\newline
+
+Equation \ref{new_state_eq} is solved using the Laplace transform, knowing $\mathcal{L}\{\dot x\}=X(s)-x(0)$, the expression above can be derived. For asymptotic stability, the system must converge towards the zero vector, meaning that the exponential term in the outputted solution must be a decaying exponential. To ensure this, the poles of the matrix $A+BK$ are chosen to all be negative numbers and of appropriate magnitudes that did not cause unreasonably large linear or angular velocities. However, the values were also chosen to have magnitudes such that the settling time was not unreasonably long. The chosen values were $[-0.5,-1,-4,-8]$. Using software tools, these poles were used to solve for matrix $K$. For this to be done manually, the characteristic polynomial of $A+BK$ can be found analytically, and then values inside $K$ are chosen to make all the roots of the characteristic polynomial equal to the desired poles. Note that all poles are in the negative half plane, this is because these poles map to the family of decaying exponential, making the system asymptotically stable. The values found were $K=[-0.1288,-1.5365,-17.2852,-4.6617]$.
+\newline
+
+As shown in simulation, the controller has very strong performance across a wide range of initial conditions within the allowable constraints. All simulations converge to an equilibrium without overshoot, and have a settling error of zero. These are two metrics of strong controller performance, and indicate that these poles are a strong basis for the conversion of the controller and system to discrete time.
+
+\subsection*{B2) Linear Time Feedback Controller Simulation}
+Four simulations were performed using the designed controller and simulated numerically. The initial conditions were chosen to test a wide range of possible starting configurations to test the controllers ability to respond to all angles within the constraints.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=14cm]{figures/}
+\end{center}
+\caption{The Outputted Trajectory of the Destabilized System}
+\label{b2}
+\end{figure}
+
 
 \end{document}
