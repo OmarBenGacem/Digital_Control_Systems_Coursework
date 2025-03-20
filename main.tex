@@ -124,15 +124,55 @@ Equation \ref{new_state_eq} is solved using the Laplace transform, knowing $\mat
 As shown in simulation, the controller has very strong performance across a wide range of initial conditions within the allowable constraints. All simulations converge to an equilibrium without overshoot, and have a settling error of zero. These are two metrics of strong controller performance, and indicate that these poles are a strong basis for the conversion of the controller and system to discrete time.
 
 \subsection*{B2) Linear Time Feedback Controller Simulation}
-Four simulations were performed using the designed controller and simulated numerically. The initial conditions were chosen to test a wide range of possible starting configurations to test the controllers ability to respond to all angles within the constraints.
+Four simulations were performed using the designed controller and simulated numerically. The initial conditions were chosen to test a wide range of possible starting configurations to test the controller's ability to respond to all angles within the constraints.
 
 \begin{figure}[H]
-\begin{center}
-\includegraphics[width=14cm]{figures/}
-\end{center}
-\caption{The Outputted Trajectory of the Destabilized System}
-\label{b2}
+    \centering
+    % \includegraphics[width=20cm]{figures/b2.png}
+    \includegraphics[width=\textwidth]{figures/b2.png}
+    \caption{B2) Continuous Time System Responses: Linear and Angular Displacement}
+    \label{b2}
 \end{figure}
+
+As shown, controller performance is incredibly strong, with the angular rate converging within 5 seconds across all trials with no overshoot or static error. The cart position converges more slowly compared to the pendulum, however, this is not prioritized because the objective is to keep the pendulum upright, not navigate the cart to $s=0$. The maximum experienced velocity of the carts across all simulations is $-1.2m/s$, which was deemed within the allowable values, especially when considering that this is when the starting angle was far from the equilibrium position the system was linearized around. 
+
+\subsection*{B3) Nonlinear Simulation with a Linear Controller}
+The same controller was simulated, however this time using the nonlinear differential equation derived in A1. The results are shown below in Figure \ref{B3}.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=20cm]{figures/b2.png}
+    \includegraphics[width=\textwidth]{figures/b3_x.png}
+    \caption{B3) Nonlinear System Responses: Displacement and Angle}
+    \label{B3}
+\end{figure}
+
+The output of the two state responses are similar; however, in instances where the initial condition deviates far from the point the system was linearized around (simulations 2 and 3), the controller actuates larger movements to try and control the pendulum. Overall, the performance of the controller is still strong across all simulations.
+
+\subsection*{B4) Stable Sampling Time}
+
+some text
+
+\subsection*{B5) Performance Degradation Across Sampling Times}
+
+some text
+
+\subsection*{B6) Discrete Time State Space Representation}
+Matrices $A$ and $B$ were calculated in Equations \ref{jacobian} and \ref{jB} respectively. Section B4 noted that the slowest possible sampling time for this system is \input{equations/tsmax}to guarantee asymptotic stability. To introduce a non-unity safety factor, a sampling time of \input{equations/ts} was chosen for all future simulations to ensure behavior is as expected from the theoretical derivations of the controller.
+
+To create the discrete-time state-space representation of the cart-pendulum system, the following definitions are used to write the system as $\dot x[k+1]=A_dx[k]+B_du[k]$. Equations \ref{ad} and \ref{bd} show the creation of matrices $A_d$ and $B_d$.
+
+\begin{equation}\label{ad}
+    A_d=e^{\input{equations/A}*Ts}=
+\end{equation}
+
+
+\begin{equation}\label{Bd}
+    B_d=1
+\end{equation}
+
+It is noted that $C_d=C$ and $D_d=D$ as these matrices do not introduce any new dynamics to the system.
 
 
 \end{document}
+
