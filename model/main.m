@@ -307,14 +307,13 @@ toOverleaf(Dd, "Dd", true);
 Kd = sym("Kd", [1,4]);
 poles_discrete = exp(poles * Ts);
 Kd = place(Ad, Bd, poles_discrete);
-toOverleaf(Kd, "Kd", true)
 
-% Kd = K * eye(size(A_val))
-% A_d_cl = expm((A_val - B_val * Kd) * Ts); 
-A_d_cl = ((Ad - Bd * Kd)); 
+A_d_cl = Ad - Bd * Kd; 
 
 
-% A_d_cl = Ad - Bd * Kd
+toOverleaf(poles_discrete, "poles_d", true);
+toOverleaf(Kd, "Kd", true);
+
 
 
 if plot_B7
