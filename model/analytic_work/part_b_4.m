@@ -51,9 +51,9 @@ Ad = sym("Ad", size(A));
 Bd = sym("Bd", size(B));
 
 F = A - B * Kd;
-s = sym("s", [1, 4]);
-lap = laplace(F);
-eigz = diag(s) - F;
-inverse = inv(eigz);
-invlap = ilaplace(inverse)
+% s = sym("s", [1, 4]);
+% lap = laplace(F);
+% eigz = diag(s) - F;
+% inverse = inv(eigz);
+% invlap = ilaplace(inverse)
 

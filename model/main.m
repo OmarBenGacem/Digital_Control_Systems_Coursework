@@ -6,14 +6,14 @@ part_a;
 
 load_variables;
 
-plot_B2  = true;
-plot_B3  = true;
-plot_B4  = true;
-plot_B5  = true;
+plot_B2  = false;
+plot_B3  = false;
+plot_B4  = false;
+plot_B5  = false;
 plot_B7  = true;
-plot_B8  = true;
-plot_B9  = true;
-plot_B10 = true;
+plot_B8  = false;
+plot_B9  = false;
+plot_B10 = false;
 
 %                      s     sdot   phi     dphi
 initial_conditions = [ 0,   0,     0.0872665,      0;
@@ -66,7 +66,7 @@ if plot_B2
     
         % Convert initial condition from radians to degrees
         IC_deg = initial_conditions(i,3) * (180/pi);
-    
+
         % First subplot: State evolution
         ax1 = subplot(2, nSim, i);
         yyaxis left
@@ -267,6 +267,10 @@ end
 part_b_4;
 Ts = 0.2;
 
+if plot_B4
+
+
+end
 
 
 
@@ -320,7 +324,8 @@ if plot_B7
     
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-
+       IC_deg = initial_conditions(i,3) * (180/pi);
+    
 
         state = initial_conditions(i, :).';  % Column vector
 
@@ -343,14 +348,14 @@ if plot_B7
         plot(t_sim, x_hist(3, :)*180/pi, 's--', 'LineWidth', 1.5, 'MarkerSize', 4) % Discrete points
         ylabel('\phi (deg)')
         
-        title(sprintf('Initial Condition %d', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
     end
     
-    sgtitle('Discrete-Time System Responses: Displacement and Angle')
-    saveas(gcf, '../figures/Discrete_Time_System_responce_x.png');
+    sgtitle('B7) Discrete-Time System Responses: Displacement and Angle')
+    saveas(gcf, '../figures/B7_x.png');
 
 
     figure('Position', [100, 100, 1600, 800]);
@@ -385,7 +390,7 @@ if plot_B7
     end
     
     sgtitle('B7) Discrete-Time System Responses: Linear and Angular Velocities')
-    saveas(gcf, '../figures/Discrete_Time_System_responce_v.png');
+    saveas(gcf, '../figures/B7_v.png');
 
 
 
