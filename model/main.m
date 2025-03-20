@@ -6,14 +6,14 @@ part_a;
 
 load_variables;
 
-plot_B2 = true;
-plot_B3 = true;
-plot_B4 = false;
-plot_B5 = false;
-plot_B7 = false;
-plot_B8 = false;
-plot_B9 = false;
-plot_B10 = false;
+plot_B2  = true;
+plot_B3  = true;
+plot_B4  = true;
+plot_B5  = true;
+plot_B7  = true;
+plot_B8  = true;
+plot_B9  = true;
+plot_B10 = true;
 
 %                      s     sdot   phi     dphi
 initial_conditions = [ 0,   0,     0.0872665,      0;
@@ -264,7 +264,7 @@ end
 % LECTURE 7 SLIDE 17/19
 
 part_b_4;
-Ts = 0.5;
+Ts = 0.1;
 
 
 
