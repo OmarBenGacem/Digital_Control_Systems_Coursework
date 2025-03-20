@@ -24,38 +24,17 @@ function toOverleaf(eq, fileName, varargin)
         if isstring(thirdArg)
             thirdArg = char(thirdArg);
         end
-        fprintf(fid, 'third_arg = %s\n\n', thirdArg);
+        fprintf(fid, '\\begin{equation}\n%s = %s\n\\end{equation}\n', thirdArg, eqLatex);
+        % fprintf(fid, 'third_arg = %s\n\n', thirdArg);
     else
-
         
+        fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
+
     end
 
-
-    fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-
-    % Close the file
     fclose(fid);
 
 
 end
 
 
-% 
-% function toOverleaf(eq, fileName)
-% 
-%     if isstring(fileName)
-%         fileName = char(fileName);
-%     end
-%     targetFolder = fullfile(pwd, '..', 'equations');
-% 
-%     eqLatex = latex(eq);
-% 
-%     fullFileName = fullfile(targetFolder, [fileName, '.tex']);
-%     fid = fopen(fullFileName, 'w');
-%     if fid == -1
-%         error('Could not open or create file %s for writing.', fullFileName);
-%     end
-%     fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
-%     fclose(fid);
-% 
-% end
