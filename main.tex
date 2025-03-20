@@ -60,8 +60,41 @@
 \input{equations/reachability}
 
 
-\section{System Dynamics}
-The system
+\section{System Dynamics (Part A)}
+The system being modeled is an inverted pendulum attached to a sliding cart. The target is to control the liner displacement of the card in order to hold the pendulum in an inverted position. Equation \ref{eqofm} gives the Newtonian equations of motion for the cart-pendulum system.
 
+\input{equations/equations_of_motion}
+
+\subsection{A1) Standard Form}
+To write the cart-pendulum system in standard form, the state variable $\underline{x}$ and the input $\underline{u}$ must be identified. The applied force $\mu(t)$ acts as the only input to this system. By inspection of the equations of motion, it is trivial to show that displacement $s$ and angle $\phi$ both have first- and second-order differential terms, thus making state variable $\underline{x} = [s, \dot s, \phi, \dot\phi]^T$. Equation \ref{eqofm} can be rearranged and reduced to give Equation \ref{fofx} which acts as the state update function.
+
+\input{equations/f_of_x}
+
+\subsection{A2) Free Response Equilibrium}
+Setting $u=\mu(t)=0$ gives the free response of the system, where the equilibrium of this system are values of $\underline{\dot x}=\underline{0}$. The values of $\underline{x}$ that satisfy this criteria are shown below in Equation \ref{ueqzero}.
+
+\input{equations/ueqzero}
+
+Equation \ref{fofx} shows that the displacement of the cart, $s$, has no impact on the systems ability to reach equilibrium. Thus the possible values of $s$ is determined to be the set of real numbers. In practice, it is bounded to be a reasonable amount of translational motion. The values of $\phi$ is set to be any period of $\pi$, meaning the pendulum is either vertically up or down. 
+
+\subsection{A3) Linearization About an Equilibrium}
+Given a point to linearize about, the state space model of the non-linear system $f(\underline{x},\underline{u})$ can be derived using the Jacobian operator to give the Jacobian matrix. The linearization should yeild an equation of the form $\dot x = Ax+Bu$. Equation \ref{jacobian} shows the taking of the Jacobian vector at the point $\underline{x}=\underline{0}$, to get the matrix $A$.
+
+\input{equations/jacobian}
+
+To find matrix $B$, the Jacobian is taken again, however, this time with respect to input $u$. Equation \ref{jB} shows the derivation of the input Jacobian for equilibrium $\underline{x}=\underline{0}$.
+
+\input{equations/jacobian_b}
+
+
+This can be put into full state space representation as shown in Equation \ref{linized}. This gives the full state-space representation of the cart-pendulum system, and can be used to describe the local behavior of the system. about the point the equilibrium was taken.
+\input{equations/full_ss}
+
+\subsection{A4) Linear Dynamics}
+The system dynamics
+
+\subsection{A5) Reachability}
+
+\subsection{A6) Observability}
 
 \end{document}
