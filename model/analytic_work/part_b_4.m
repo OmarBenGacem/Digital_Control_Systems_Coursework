@@ -5,13 +5,10 @@
 %  for which the closed-loop system is asymptotically stable. Find a value of T for which the closed-loop
 %  system is unstable. Plot the corresponding y(t) and comment on the plots.
 
-clear;
-clc;
 
 load_variables;
-
-K_val = [-2.06008583690989, -5.29184549356224, -41.0138922746782, -12.0337339055794];
 part_a;
+
 
 
 
@@ -22,7 +19,8 @@ k = sym('k');
 K = sym("K", [1,4]);
 Ts = sym("Ts");
 tau = sym("tau");
-
+kd = sym('Kd');
+Kd = sym("Kd", [1,4]);
 
 %% Functions
 xd = symfun(sym("xd"), k); % digital representation of x
@@ -36,28 +34,26 @@ ud = symfun(sym("ud"), k);
 
 
 %% Code
+
 lin_sys = dx == A * x + B * u;
+
 cntrld_sys = dx == A * x + B * K * x;
+
+
 %% DELETE - Is Repeated
 % A_val_sym = subs(A, [F, g, M, L], [F_val, g_val, M_val, L_val]);
 % B_val_sym = subs(B, [M, L], [M_val, L_val]);
 
-A_cl = subs(A, [F, g, M, L], [F_val, g_val, M_val, L_val]) + subs(B, [M, L], [M_val, L_val]) * subs(K, K, K_val)
+% A_cl = subs(A, [F, g, M, L], [F_val, g_val, M_val, L_val]) + subs(B, [M, L], [M_val, L_val]) * subs(K, K, K_val)
 
+T = sym("T");
+Ad = sym("Ad", size(A));
+Bd = sym("Bd", size(B));
 
+F = A - B * Kd;
+s = sym("s", [1, 4]);
+lap = laplace(F);
+eigz = diag(s) - F;
+inverse = inv(eigz);
+invlap = ilaplace(inverse)
 
-
-
-
-
-
-% A_dT = (A + B * K) * Ts;
-% dig_eq = x(k+1) == A_dT * x(k);
-% 
-% 
-% Acl = A + B*K; 
-% ztransformed = ztrans( x(k+1) ) == ztrans( A_dT * x(k) )
-
-% eat = exp(A * tau);
-% int_eat = int(eat, tau, [0,Ts]);
-% d_eq = x_plus == eat * x + int_eat * B * u;

@@ -50,8 +50,8 @@ save("a3", "A", "B", "C", "D");
 
 R = sym("R");
 O = sym("O");
-Reachability_Matrix = R == [B , A*B , A^2*B , A^3*B];
-Observability_Matrix = O == [C ; C*A ; C*A^2 ; C*A^3];
+Reachability_Matrix = [B , A*B , A^2*B , A^3*B];
+Observability_Matrix = [C ; C*A ; C*A^2 ; C*A^3];
 Linear_Dynamics = [A , B ; C , D];
 
 
@@ -59,6 +59,8 @@ Linear_Dynamics = [A , B ; C , D];
 toOverleaf(Reachability_Matrix, "reachability");
 toOverleaf(Observability_Matrix, "observability");
 toOverleaf(Linear_Dynamics, "linear_dynamics");
+toOverleaf(det(Reachability_Matrix),"reachability_det")
+% toOverleaf(det(Observability_Matrix),"observability_det")
 toOverleaf(A, "A");
 toOverleaf(B, "B");
 % toOverleaf(C, "C");
