@@ -160,7 +160,7 @@ some text
 \subsection*{B6) Discrete Time State Space Representation}
 Matrices $A$ and $B$ were calculated in Equations \ref{jacobian} and \ref{jB} respectively. Section B4 noted that the slowest possible sampling time for this system is \input{equations/tsmax}to guarantee asymptotic stability. To introduce a non-unity safety factor, a sampling time of \input{equations/ts} was chosen for all future simulations to ensure behavior is as expected from the theoretical derivations of the controller.
 
-To create the discrete-time state-space representation of the cart-pendulum system, the following definitions are used to write the system as $\dot x[k+1]=A_dx[k]+B_du[k]$. Equations \ref{ad} and \ref{Bd} show the creation of matrices $A_d$ and $B_d$ respectivley.
+To create the discrete-time state-space representation of the cart pendulum system, the following definitions are used to write the system as $\dot x[k+1]=A_dx[k]+B_du[k]$. Equations \ref{ad} and \ref{Bd} show the creation of matrices $A_d$ and $B_d$ respectively.
 
 \begin{equation}\label{ad}
     A_d=e^{\input{equations/A}*Ts}=\input{equations/Ad}
@@ -176,7 +176,15 @@ It is noted that $C_d=C$ and $D_d=D$ as these matrices do not introduce any new 
 
 
 \subsection*{B7) Discrete Time Feedback Controller}
-To create a full-state feedback controller for the new discrete-time system, an identical method to that in Section B1, however, the poles are mapped to their discrete-time equivalent. The poles are mapped into the discrete-time variant by first observing that the poles are points on the positive real axis, and thus are in the Laplace($s$) domain. These can be converted into their respective $z$ representation using $z=e^{sT}$, with sampling time $T$. This maps the poles to 
+To create a full-state feedback controller for the new discrete-time system, an identical method to that in Section B1, however, the poles are mapped to their discrete-time equivalent. The poles are mapped into the discrete-time variant by first observing that the poles are points on the positive real axis, and thus are in the Laplace($s$) domain. These can be converted into their respective $z$ representation using $z=e^{sT}$, with sampling time $T$. This maps the poles to the $z$ plane, with the new poles being \input{equations/poles_d}. 
+\newline
+
+These poles have been mapped from the negative-real axis $\Re^-$, where is the stable Laplacian area, to now the inside of the unit circle, $D^-$, which is known as the "region of convergence", which is where the poles need to be for the discrete time system to be asymptotically stable. This is expected, as both the sampling time of \input{equations/ts}s and 
+the poles of the continuous system are stable, and thus it is expected that the poles of the discrete time system also result in a stable system. 
+
+
+
+
 
 \end{document}
 
