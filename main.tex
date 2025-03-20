@@ -118,7 +118,7 @@ A full state feedback controller of the form $u=Kx$ was designed to control the 
 \end{equation}
 \newline
 
-Equation \ref{new_state_eq} is solved using the Laplace transform, knowing $\mathcal{L}\{\dot x\}=X(s)-x(0)$, the expression above can be derived. For asymptotic stability, the system must converge towards the zero vector, meaning that the exponential term in the outputted solution must be a decaying exponential. To ensure this, the poles of the matrix $A+BK$ are chosen to all be negative numbers and of appropriate magnitudes that did not cause unreasonably large linear or angular velocities. However, the values were also chosen to have magnitudes such that the settling time was not unreasonably long. The chosen values were $[-0.5,-1,-4,-8]$. Using software tools, these poles were used to solve for matrix $K$. For this to be done manually, the characteristic polynomial of $A+BK$ can be found analytically, and then values inside $K$ are chosen to make all the roots of the characteristic polynomial equal to the desired poles. Note that all poles are in the negative half plane, this is because these poles map to the family of decaying exponential, making the system asymptotically stable. The values found were $K=[-0.1288,-1.5365,-17.2852,-4.6617]$.
+Equation \ref{new_state_eq} is solved using the Laplace transform, knowing $\mathcal{L}\{\dot x\}=X(s)-x(0)$, the expression above can be derived. For asymptotic stability, the system must converge towards the zero vector, meaning that the exponential term in the outputted solution must be a decaying exponential. To ensure this, the poles of the matrix $A+BK$ are chosen to all be negative numbers and of appropriate magnitudes that did not cause unreasonably large linear or angular velocities. However, the values were also chosen to have magnitudes such that the settling time was not unreasonably long. The chosen values were $\input{equations/poles}$ Using software tools, these poles were used to solve for matrix $K$. For this to be done manually, the characteristic polynomial of $A+BK$ can be found analytically, and then values inside $K$ are chosen to make all the roots of the characteristic polynomial equal to the desired poles. Note that all poles are in the negative half plane, this is because these poles map to the family of decaying exponential, making the system asymptotically stable. The values found were $K=\input{equations/K}$.
 \newline
 
 As shown in simulation, the controller has very strong performance across a wide range of initial conditions within the allowable constraints. All simulations converge to an equilibrium without overshoot, and have a settling error of zero. These are two metrics of strong controller performance, and indicate that these poles are a strong basis for the conversion of the controller and system to discrete time.
@@ -160,19 +160,23 @@ some text
 \subsection*{B6) Discrete Time State Space Representation}
 Matrices $A$ and $B$ were calculated in Equations \ref{jacobian} and \ref{jB} respectively. Section B4 noted that the slowest possible sampling time for this system is \input{equations/tsmax}to guarantee asymptotic stability. To introduce a non-unity safety factor, a sampling time of \input{equations/ts} was chosen for all future simulations to ensure behavior is as expected from the theoretical derivations of the controller.
 
-To create the discrete-time state-space representation of the cart-pendulum system, the following definitions are used to write the system as $\dot x[k+1]=A_dx[k]+B_du[k]$. Equations \ref{ad} and \ref{bd} show the creation of matrices $A_d$ and $B_d$.
+To create the discrete-time state-space representation of the cart-pendulum system, the following definitions are used to write the system as $\dot x[k+1]=A_dx[k]+B_du[k]$. Equations \ref{ad} and \ref{Bd} show the creation of matrices $A_d$ and $B_d$ respectivley.
 
 \begin{equation}\label{ad}
-    A_d=e^{\input{equations/A}*Ts}=
+    A_d=e^{\input{equations/A}*Ts}=\input{equations/Ad}
 \end{equation}
 
 
 \begin{equation}\label{Bd}
-    B_d=1
+    B_d=\int_{0}^{T} e^{A(T - \tau)} B \, d\tau=\input{equations/Bd}
 \end{equation}
 
 It is noted that $C_d=C$ and $D_d=D$ as these matrices do not introduce any new dynamics to the system.
 
+
+
+\subsection*{B7) Discrete Time Feedback Controller}
+To create a full-state feedback controller for the new discrete-time system, an identical method to that in Section B1, however, the poles are mapped to their discrete-time equivalent. The poles are mapped into the discrete-time variant by first observing that the poles are points on the positive real axis, and thus are in the Laplace($s$) domain. These can be converted into their respective $z$ representation using $z=e^{sT}$, with sampling time $T$. This maps the poles to 
 
 \end{document}
 
