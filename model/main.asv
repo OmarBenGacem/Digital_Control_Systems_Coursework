@@ -6,14 +6,14 @@ part_a;
 
 load_variables;
 
-plot_B2 = true;
-plot_B3 = true;
-plot_B4 = false;
-plot_B5 = false;
-plot_B7 = false;
-plot_B8 = false;
-plot_B9 = false;
-plot_B10 = false;
+plot_B2  = true;
+plot_B3  = true;
+plot_B4  = true;
+plot_B5  = true;
+plot_B7  = true;
+plot_B8  = true;
+plot_B9  = true;
+plot_B10 = true;
 
 %                      s     sdot   phi     dphi
 initial_conditions = [ 0,   0,     0.0872665,      0;
@@ -83,7 +83,7 @@ if plot_B2
         ylabel('\phi (deg)')
     
         % Find symmetric limits for 'φ (deg)'
-        y_right_min = min(x(:,3)*180/pi);z`
+        y_right_min = min(x(:,3)*180/pi);
         y_right_max = max(x(:,3)*180/pi);
         y_right_lim = max(abs([y_right_min, y_right_max]));  % Symmetric limit
         ylim([-y_right_lim, y_right_lim]);  % Ensure zero alignment
@@ -264,7 +264,7 @@ end
 % LECTURE 7 SLIDE 17/19
 
 part_b_4;
-Ts = 0.5;
+Ts = 0.2;
 
 
 

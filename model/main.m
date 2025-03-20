@@ -264,7 +264,7 @@ end
 % LECTURE 7 SLIDE 17/19
 
 part_b_4;
-Ts = 0.1;
+Ts = 0.3;
 
 
 
