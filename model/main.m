@@ -111,8 +111,8 @@ if plot_B2
     linkaxes([ax1_all, ax2_all], 'x');
 
 
-    sgtitle('B2) Continuous Time System Responses: Linear and Angular Velocities')
-    saveas(gcf, '../figures/Continuous_Time_System_Responses_v.png');
+    sgtitle('B2) Continuous Time System Responses: Linear and Angular Displacement')
+    saveas(gcf, '../figures/b2.png');
 end
 
 
@@ -181,59 +181,70 @@ if plot_B3
     linkaxes([ax1_all, ax2_all], 'x');
 
 
-
-    % figure('Position', [100, 100, 1600, 800]);
-    % for i = 1:size(initial_conditions,1)
-    % 
-    % 
-    %     x0 = initial_conditions(i, :).';
-    %     [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
-    % 
-    % 
-    %     subplot(2,2,i)
-    %     yyaxis left
-    %     plot(t, x(:,1)*100, 'LineWidth', 1.5) % s is the first state, in cm now
-    %     ylabel('s (cm)')
-    % 
-    %     yyaxis right
-    %     plot(t, x(:,3)*180/pi, '--', 'LineWidth', 1.5) % phi is the third state
-    %     ylabel('\phi (deg)')
-    % 
-    %     title(sprintf('Initial Condition %d', i))
-    %     xlabel('Time (s)')
-    %     grid on;
-    %     legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-    % end
-    % 
     sgtitle('B3) Nonlinear System Responses: Displacement and Angle')
-    saveas(gcf, '../figures/Nonliner_System_Responces_x.png');
+    saveas(gcf, '../figures/b3_x.png');
 
 
 
-    % figure('Position', [100, 100, 1600, 800]);
-    % for i = 1:size(initial_conditions,1)
-    % 
-    %     x0 = initial_conditions(i, :).';   
-    %     [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
-    % 
-    % 
-    %     subplot(2,2,i)
-    %     yyaxis left
-    %     plot(t, x(:,2)*100, 'LineWidth', 1.5)
-    %     ylabel('Linear Velocity (cm/s)')
-    % 
-    %     yyaxis right
-    %     plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5)
-    %     ylabel('Angular Velocity (deg/s)')
-    % 
-    %     title(sprintf('Initial Condition %d', i))
-    %     xlabel('Time (s)')
-    %     grid on;
-    %     legend('s (cm)', '\phi (deg)', 'Location', 'Best')
-    % end
-    % 
-    % sgtitle('B3) Nonlinear System Responses: Angular and Linear Velocities')
-    % saveas(gcf, '../figures/Nonlinear_System_Responces_v.png');
+    figure('Position', [100, 100, 2200, 800]);
+    nSim = size(initial_conditions, 1);
+    
+    ax1_all = [];  % Store subplot handles for linking
+    ax2_all = [];
+    
+    for i = 1:nSim
+        x0 = initial_conditions(i, :).';
+        [t, x] = ode45(@(t, x) state_update(x, -K*x), tspan, x0);
+    
+        % Convert initial condition from radians to degrees
+        IC_deg = initial_conditions(i,3) * (180/pi);
+    
+        % First subplot: State evolution
+        ax1 = subplot(2, nSim, i);
+        yyaxis left
+        plot(t, x(:,2)*100, '-', 'LineWidth', 1.5)
+        ylabel('s (cm)')
+    
+        % Find symmetric limits for 's (cm)'
+        y_left_min = min(x(:,2)*100);
+        y_left_max = max(x(:,2)*100);
+        y_left_lim = max(abs([y_left_min, y_left_max]));  % Symmetric limit
+        ylim([-y_left_lim, y_left_lim]);  % Ensure zero alignment
+    
+        yyaxis right
+        plot(t, x(:,4)*180/pi, '--', 'LineWidth', 1.5)
+        ylabel('\phi (deg)')
+    
+        % Find symmetric limits for 'φ (deg)'
+        y_right_min = min(x(:,4)*180/pi);
+        y_right_max = max(x(:,4)*180/pi);
+        y_right_lim = max(abs([y_right_min, y_right_max]));  % Symmetric limit
+        ylim([-y_right_lim, y_right_lim]);  % Ensure zero alignment
+    
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
+        xlabel('Time (s)')
+        grid on;
+        legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+        xlim([0 t(end)]); 
+        ax1_all = [ax1_all, ax1];  % Store handle
+    
+        % Second subplot: Actuation input
+        ax2 = subplot(2, nSim, i + nSim);
+        u = K * x';  % Ensure matrix multiplication is correct
+        plot(t, u, 'LineWidth', 1.5)
+        title(sprintf("Simulation %d Actuation, (IC: %.2f°)", i, IC_deg))  % Updated title with degree symbol
+        xlabel('Time (s)')
+        ylabel('u(t)')
+        grid on;
+        xlim([0 t(end)]);
+        ax2_all = [ax2_all, ax2];  % Store handle
+    end
+    
+    % Link x-axes for better visualization
+    linkaxes([ax1_all, ax2_all], 'x');
+
+    sgtitle('B3) Nonlinear System Responses: Angular and Linear Velocities')
+    saveas(gcf, '../figures/b3_v.png');
 
 end
 
