@@ -100,7 +100,7 @@ The reachability matrix is used to determine if all possible states are reachabl
 
 \input{equations/reach}
 
-It is trivial to see that this matrix is full rank, however to confirm, the determinant of the reachability matrix can be shown to be $det\input{equations/reachability_det}$. Thus for any non-zero gravity, pendulum length, or cart mass, this system will be full rank, and thus reachable.
+It is trivial to see that this matrix is full rank, however to confirm, the determinant of the reachability matrix can be shown to be $det(R)=\input{equations/reachability_det}$. Thus for any non-zero gravity, pendulum length, or cart mass, this system will be full rank, and thus reachable.
 
 \subsection*{A6) Observability}
 Similarly to the reachability matrix, the observability matrix gives insight into if the system's ability to identify it's own state for use in feedback. Equation \ref{obsv} shows the observability matrix and it's definition. Without proof, it can be trivially shown that this is a full rank matrix, making the cart-pendulum system fully observable.
