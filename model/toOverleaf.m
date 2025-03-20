@@ -30,7 +30,7 @@ function toOverleaf(eq, fileName, varargin)
         % fprintf(fid, 'third_arg = %s\n\n', thirdArg);
     else
         
-        fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
+        % fprintf(fid, '\\begin{equation}\n%s\n\\end{equation}\n', eqLatex);
         fprintf(fid, '\\n%s\n\\n', eqLatex);
 
     end
