@@ -30,7 +30,8 @@ function toOverleaf(eq, fileName, ismatrix, varargin)
         eqLatex = latex(eq);
         eqLatex = strrep(eqLatex, '\,', '');
 
-        fprintf(fid, eqLatex);
+        % fprintf(fid, eqLatex);
+        fprintf(fid, '%s', eqLatex);
     
     end
 

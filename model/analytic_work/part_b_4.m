@@ -51,10 +51,14 @@ toOverleaf(tf, "tf", true);
 
 z = sym("z");
 tustin_s = 2/T * (1 - z^-1)/(1+z^-1);
-toOverleaf(tustin_s, "tust", false);
 tfd = subs(eigz, s, tustin_s);
-toOverleaf(eigz, "eigzd", true);
+tfd_det = det(tfd);
 
+
+toOverleaf(tustin_s, "tust", false);
+toOverleaf(eigz, "eigzd", true);
+toOverleaf(tfd, "tfd", true);
+toOverleaf(tfd_det, "tfd_det", false)
 %% W/ Feedback
 
 fdbk = (A + B*K);

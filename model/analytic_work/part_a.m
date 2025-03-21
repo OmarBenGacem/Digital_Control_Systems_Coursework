@@ -63,8 +63,11 @@ toOverleaf(B, "B", true);
 toOverleaf(Reachability_Matrix, "reachability", true);
 toOverleaf(Observability_Matrix, "observability", true);
 toOverleaf(Linear_Dynamics, "linear_dynamics", true);
-toOverleaf(det(Reachability_Matrix),"reachability_det", false)
-% toOverleaf(det(Observability_Matrix),"observability_det")
+
+if false
+    toOverleaf(det(Reachability_Matrix),"reachability_det", false)
+    % toOverleaf(det(Observability_Matrix),"observability_det") 
+end
 
 % toOverleaf(C, "C");
 % toOverleaf(D, "D");
