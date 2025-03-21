@@ -8,8 +8,8 @@ load_variables;
 
 plot_B2  = false;
 plot_B3  = true;
-plot_B4  = false;
-plot_B5  = false;
+plot_B4  = true;
+plot_B5  = true;
 plot_B7  = false;
 plot_B8  = false;
 plot_B9  = false;
@@ -630,10 +630,9 @@ end
 
 
 
-%% B3
-%  Display plots of y(t) for the nonlinear system (1), from the same initial states x(0) and using the controller designed in point B1. Comment on these plots.
+%% B5
 
-if plot_B3
+if plot_B5
 
     Ts_vals = linspace(0.1, 2, 6);  % 6 sampling times from 0.1 to 2
     IC_index = 2;                   % Use only initial condition 3
@@ -693,8 +692,8 @@ if plot_B3
     end
 
 
-    sgtitle('B3) Nonlinear System Responses: Angular and Linear Velocities')
-    saveas(gcf, '../figures/b3_v.png');
+    sgtitle('B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequenciess')
+    saveas(gcf, '../figures/b5.png');
 
 end
 
