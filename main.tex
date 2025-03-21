@@ -141,53 +141,37 @@ The same controller was simulated, however this time using the nonlinear differe
 
 \begin{figure}[H]
     \centering
-    % \includegraphics[width=20cm]{figures/b2.png}
-    \includegraphics[width=\textwidth]{figures/b3_x.png}
-    \caption{B3) Nonlinear System Responses: Displacement and Angle}
-    \label{B3}
+    \includegraphics[width=\textwidth]{figures/B4.png}
+    \caption{B4) Discrete-Time System Responses with an Unstable Sampling Time}
+    \label{B4}
 \end{figure}
 
 The output of the two state responses are similar; however, in instances where the initial condition deviates far from the point the system was linearized around (simulations 2 and 3), the controller actuates larger movements to try and control the pendulum. Overall, the performance of the controller is still strong across all simulations.
 
 \subsection*{B4) Stable Sampling Time}
 
-To determine the range of allowable sampling time for the linearized system in A3, we first must consider the input-to-state transfer function, to determine what the allowable sampling time is. The Tustin (Bilinear) transformation will then be used to ensure that the roots of the discrete-time transfer function are still asymptotically stable.
-
-\paragraph{Transfer Function}
-To find the transfer function of the linear system, we consider the input-to-state transfer function $X(s)/U(s)$. This derivation is shown in Equation \ref{tf}, using derivations from Equations \ref{jacobian} and \ref{jB}. 
-
-
-\begin{equation}\label{tf}
-\dot x = Ax+Bu \rightarrow \mathcal{L}\{...\} \rightarrow sX(s)-x(0)=AX(s)+BU(s)
-\end{equation}
-
-This gives the transfer function of this system that will be shown below in Equation \ref{acctf}. Note the substitution $x(0)=\underline{0}$ was made as per the definition of a transfer function.
-
-\begin{equation}\label{acctf}
-    sX(s)-AX(s)=BU(s)\rightarrow G(s)=\frac{X(s)}{U(s)}=(Is-A)^{-1}B=\input{equations/tf} 
-\end{equation}
-
-\paragraph{Transfer Function Stability}
-The stability of the transfer function depends on the determinant (and thus the poles) of ($(Is-A)^-1$). To quickly convert from the Laplace domain to the Z domain, the Bilinear transform is used to quickly convert. This derivation is shown in Equation \ref{bilin}.
-
-\begin{equation}\label{bilin}
-(Is-A)^{-1}=\left. \input{equations/eigzd} \right|_{s=\frac{2}{T} \frac{(1 - z^{-1})}{(1+z^{-1})}}=\input{equations/tfd}
-\end{equation}
-
-The determinant of the state matrix can be found to be as shown in Equation \ref{det_ts}.
-\begin{equation}\label{det_ts}
-    \input{equations/tfd_det}
-\end{equation}
+To determine the range of allowable sampling time for the linearized system in A3, the system is first digitized to create the closed loop discrete time transfer function. For closed loop digital stability, all eigenvalues must be in the negative-left side of the complex plane. This maps to the inside of the unit circle in the $z$-plane.
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=20cm]{figures/b2.png}
+    \includegraphics[width=\textwidth]{figures/B5.png}
+    \caption{B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequencies}
+    \label{B4}
+\end{figure}
 
 
 
 \subsection*{B5) Performance Degradation Across Sampling Times}
 
-\begin{equation}
--\frac{s\,\left(g-L\,s^2\right)\,\left(F+M\,s\right)}{K_{4}\,s^3+L\,M-K_{2}\,L\,s^3+L\,M\,s^4}
-\end{equation}
+The non-linear system was simulated using the same discrete time controller, sampled across a variety of sampling times. The experiment was run across 6 trials, all shown in Figure \ref{B5}
 
-
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=20cm]{figures/B5.png}
+    \includegraphics[width=\textwidth]{figures/B5.png}
+    \caption{B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequencies}
+    \label{B5}
+\end{figure}
 
 \subsection*{B6) Discrete Time State Space Representation}
 Matrices $A$ and $B$ were calculated in Equations \ref{jacobian} and \ref{jB} respectively. Section B4 noted that the slowest possible sampling time for this system is \input{equations/tsmax}to guarantee asymptotic stability. To introduce a non-unity safety factor, a sampling time of \input{equations/ts} was chosen for all future simulations to ensure behavior is as expected from the theoretical derivations of the controller.
