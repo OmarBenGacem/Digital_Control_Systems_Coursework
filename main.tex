@@ -183,7 +183,11 @@ The determinant of the state matrix can be found to be as shown in Equation \ref
 
 \subsection*{B5) Performance Degradation Across Sampling Times}
 
-some text
+\begin{equation}
+-\frac{s\,\left(g-L\,s^2\right)\,\left(F+M\,s\right)}{K_{4}\,s^3+L\,M-K_{2}\,L\,s^3+L\,M\,s^4}
+\end{equation}
+
+
 
 \subsection*{B6) Discrete Time State Space Representation}
 Matrices $A$ and $B$ were calculated in Equations \ref{jacobian} and \ref{jB} respectively. Section B4 noted that the slowest possible sampling time for this system is \input{equations/tsmax}to guarantee asymptotic stability. To introduce a non-unity safety factor, a sampling time of \input{equations/ts} was chosen for all future simulations to ensure behavior is as expected from the theoretical derivations of the controller.
@@ -204,38 +208,71 @@ It is noted that $C_d=C$ and $D_d=D$ as these matrices do not introduce any new 
 
 
 \subsection*{B7) Discrete Time Feedback Controller}
-To create a full-state feedback controller for the new discrete-time system, an identical method to that in Section B1, however, the poles are mapped to their discrete-time equivalent. The poles are mapped into the discrete-time variant by first observing that the poles are points on the positive real axis, and thus are in the Laplace ($s$) domain. These can be converted into their respective $z$ representation using $z=e^{sT}$, with sampling time $T$. This maps the poles to the $z$ plane, with the new poles being \input{equations/poles_d}. 
+To create a full-state feedback controller for the new discrete-time system, an identical method to that in Section B1, however, the poles are mapped to their discrete-time equivalent. The poles are mapped into the discrete-time variant by first observing that the poles are points on the positive real axis, and thus are in the Laplace ($s$) domain. These can be converted into their respective $z$ representation using $z=e^{sT}$, with sampling time $T$. This maps the poles to the $z$ plane, the new poles being \input{equations/poles_d}. 
 \newline
 
-These poles have been mapped from the negative-real axis $\Re^-$, where is the stable Laplacian area, to now the inside of the unit circle, $D^-$, which is known as the "region of convergence", which is where the poles need to be for the discrete time system to be asymptotically stable. This is expected, as both the sampling time of \input{equations/ts}s and 
-the poles of the continuous system are stable, and thus it is expected that the poles of the discrete-time system also result in a stable system. 
+These poles have been mapped from the negative-real axis $\Re^-$, where is the stable Laplacian plane, to now the inside of the unit circle, $D^-$, which is known as the "region of convergence". This is where the poles need to be for the discrete time system to be asymptotically stable. This is expected, as both the sampling time of \input{equations/ts}s and the poles of the continuous system are stable, and thus it is expected that the poles of the discrete-time system also result in a stable system. Figure \ref{B7} shows the outputted plot for the discrete time liner system.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/B7_x.png}
+    \caption{B7) Discrete-Time System Responses: Displacement and Angle}
+    \label{B7}
+\end{figure}
+
+As expected, both systems converge to the equilibrium $\underline{\dot x}=\underline{0}$, with similar performance to before, whereby the angular position (the pendulum being upright) converges much faster than the liner displacement of the cart. This is done by design, as the objective of the experiment is to keep the pendulum upright, rather than move the cart to $s=0$. The performance of this is similar to that observed in Figure \ref{B3}, and this is expected since the same controller is used between both systems, one in discrete time and one in continuous time.
+
+\subsection*{B8) Discrete Time Nonliner Simulation}
+The same digital controller was run, however instead of using the discrete time system, the non-linear system was used, which is the true numerical representation of the system's dynamics. The simulations were run using a non-linear simulator, to capture the true dynamics of the system. Figure \ref{B8} shows the outputted linear and angular displacement, as well as the actuation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/b8.png}
+    \caption{B8) Continuous-Time System with Discrete-Time Control and Actuation}
+    \label{B8}
+\end{figure}
 
 
-
-
-\subsection*{B8) }
-some text
-
+something here about comparing to b5
 
 \subsection*{B9) Optimal Discrete Time Controller}
-An optimal controller is one that minimizes the value of a cost function in relation to a forward trajectory. Optimal controllers are commonly used in model predictive control, whereby the controller needs to find the perfect balance between future states, and input actuation. The cost function must be strictly positive, and well defined (with a smooth gradient) to converge on a single, optimal controller. The chosen cost function is shown in Equation \ref{costfn}, and is a quadratic cost. The matrix $Q$ is chosen to be $diag([100, 1, 100, 1])$, such that the position of the cart and the angle of the pendulum are weighted 100 times more than their respective velocities.
+An optimal controller is one that minimizes the value of a cost function in relation to a forward trajectory. Optimal controllers are commonly used in model predictive control, whereby the controller needs to find the perfect balance between future states, and input actuation. The cost function must be strictly positive and well defined (with a smooth gradient) to converge on a single, optimal controller. The chosen cost function is shown in Equation \ref{costfn}, and is a quadratic cost. The matrix $Q$ is chosen to be $diag([100, 1, 100, 1])$, such that the position of the cart and the angle of the pendulum are weighted 100 times more than their respective velocities.
 
 \begin{equation}\label{costfn}
     J = \sum_{k=0}^{\infty} \left( x^T(k) Q x(k) + u^T(k) u(k) \right)
 \end{equation}
 
-The input is squared to ensure that it is strictly positive and the state is not compared to any reference, as the cost function is minimum when $\underline{x}=\underline{0}$, which is the desired target state. Matlab has built in functionality to solve the algebraic Riccati equation for a standard quadratic function, which Equation \ref{costfn} is, when substituting $R=[1]$. Numerically solving this equation gives the final optimal controller $K^*_d=$
+The input is squared to ensure that it is strictly positive and the state is not compared to any reference, as the cost function is minimum when $\underline{x}=\underline{0}$, which is the desired target state. Matlab has built in functionality to solve the algebraic Riccati equation for a standard quadratic function, which Equation \ref{costfn} is, when substituting $R=[1]$. Numerically solving this equation gives the final optimal controller $K^*_d=\input{equations/kdstar}$.
+\newline
 
+The optimal discrete time controller is simulated using the discretized linear system, and the output waveforms are shown in Figure \ref{B9}.
 
-\subsection*{B10) Optimal Discrete Time Controller on Continuous Time Nonliner Simulation}
-The optimal 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/b9.png}
+    \caption{B9) Discrete-Time System Responses Using an Optimal Controller}
+    \label{B9}
+\end{figure}
 
+Compared to Figures \ref{B3} and \ref{B7}, the performance of this controller is incredibly strong, with convergence of both the angular and linear displacement happening within 2 seconds. Furthermore, the magnitude of the actuation are much smaller than previous values, with the fastest recorded velocity being less than $1 m/s$ (40\% improvement). This is expected, as controller $K^*_d$ is designed to be the best possible controller given the current constraints.
+
+\subsection*{B10) Optimal Discrete Time Controller on Continuous Time Nonlinear Simulation}
+The optimal controller was now simulated using the nonlinear model, which most accurately represents the systems dynamics. The expectation is that performance will be similar due to the choosing of an appropriate sampling time in conjunction with a safety factor.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/b10.png}
+    \caption{B10) Continuous-Time System with an Optimal Discrete-Time Control and Actuation}
+    \label{B10}
+\end{figure}
+
+Compared to both B5 and B8, B10 (Figure \ref{B10}) has by far the best performance of any controller designed. The compared metrics are: maximum deviation from equilibrium: settling time, and static error. Controller B10 is approximately 200\% faster at converging to stabilizing the pendulum, with almost 800\% faster convergence to the target cart displacement. All controllers have zero static error, which shows that there were no design errors in controllers B5 and B8, only that their values (poles) were not tuned to the optimal values.
+\newline
+
+The conclusion for these three simulations are that the best controllers are designed for the system and an optimization algorithm. Simulation B8 was a discrete controller designed for a discrete system, whereas B5 was a discrete controller designed for a continuous time system simulated on a discrete time system. This explains the marginal improvement from B5 to B8, however designing optimal controllers for an application gives the strongest performance accross all performance metrics.
 
 \subsection*{B11) Closing Remarks}
 some text
-
-
-
 
 \end{document}
 
