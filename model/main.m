@@ -621,7 +621,7 @@ if plot_B4
         linkaxes([ax1, ax2], 'x');
     end
     sgtitle('B4) Discrete-Time System Responses with an Unstable Sampling Time')
-    saveas(gcf, '../figures/B4_v.png');
+    saveas(gcf, '../figures/B4.png');
 
 
 
@@ -692,7 +692,7 @@ if plot_B5
     end
 
 
-    sgtitle('B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequenciess')
+    sgtitle('B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequencies')
     saveas(gcf, '../figures/b5.png');
 
 end

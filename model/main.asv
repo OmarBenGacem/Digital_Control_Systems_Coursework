@@ -7,9 +7,9 @@ part_a;
 load_variables;
 
 plot_B2  = false;
-plot_B3  = false;
+plot_B3  = true;
 plot_B4  = true;
-plot_B5  = false;
+plot_B5  = true;
 plot_B7  = false;
 plot_B8  = false;
 plot_B9  = false;
@@ -119,7 +119,7 @@ end
 
 
 
-%% GO TO BOT
+%% GO TO BOTTOM FOR PLOTTING B4 AND B5
 
 
 %% B4
@@ -624,6 +624,76 @@ if plot_B4
     saveas(gcf, '../figures/B4_v.png');
 
 
+
+end
+
+
+
+
+%% B5
+
+if plot_B5
+
+    Ts_vals = linspace(0.1, 2, 6);  % 6 sampling times from 0.1 to 2
+    IC_index = 2;                   % Use only initial condition 3
+    x0_orig = initial_conditions(IC_index, :).';
+    IC_deg = initial_conditions(IC_index, 3) * (180/pi);
+
+    T_final = tspan(end);
+
+    figure('Position', [100, 100, 1600, 800]);  % Taller for 2 rows
+
+    for j = 1:length(Ts_vals)
+        Ts = Ts_vals(j);
+
+        % Recompute discrete control gain for current Ts
+        Ad = expm(A_val * Ts);
+        syms tau
+        Bd = double( integral(matlabFunction(expm(A_val * (Ts - tau)) * B_val, 'Vars', tau), 0, Ts, 'ArrayValued', true) );
+        poles_discrete = exp(poles * Ts);
+        Kd = place(Ad, Bd, poles_discrete);
+
+        % Initialize simulation
+        x0 = x0_orig;
+        t_total = [];
+        x_total = [];
+
+        t_offset = 0;
+        N_intervals = ceil(T_final / Ts);
+
+        for k = 1:N_intervals
+            u = -Kd * x0;
+            [t_interval, x_interval] = ode45(@(t, x) state_update(x, u), [0 Ts], x0);
+
+            t_interval = t_interval + t_offset;
+
+            t_total = [t_total; t_interval];
+            x_total = [x_total; x_interval];
+
+            x0 = x_interval(end, :)';
+            t_offset = t_offset + Ts;
+        end
+
+        % Plot state response (2x3 layout, no u(t))
+        subplot(2, 3, j)
+        yyaxis left
+        plot(t_total, x_total(:,1)*100, '-', 'LineWidth', 1.5)
+        ylabel('s (cm)')
+
+        yyaxis right
+        plot(t_total, x_total(:,3)*180/pi, '--', 'LineWidth', 1.5)
+        ylabel('\phi (deg)')
+
+        title(sprintf("Ts = %.2f s, IC: %.2f°", Ts, IC_deg))
+        xlabel('Time (s)')
+        grid on;
+        legend('s (cm)', '\phi (deg)', 'Location', 'Best')
+        xlim([0 T_final]);
+    end
+
+
+    sgtitle('B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequencies')
+    saveas(gcf, '../figures/b5.png');
 
 end
 
