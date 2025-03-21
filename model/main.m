@@ -7,8 +7,8 @@ part_a;
 load_variables;
 
 plot_B2  = false;
-plot_B3  = true;
-plot_B4  = true;
+plot_B3  = false;
+plot_B4  = false;
 plot_B5  = true;
 plot_B7  = false;
 plot_B8  = false;
@@ -825,7 +825,7 @@ if plot_B5
 
 
     sgtitle('B5) Nonlinear System Responses to a Digital Controller with Different Sampling Frequencies')
-    saveas(gcf, '../figures/b5.png');
+    saveas(gcf, '../figures/b5_new.png');
 
 end
 
