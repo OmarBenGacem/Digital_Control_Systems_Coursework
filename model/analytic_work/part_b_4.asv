@@ -51,9 +51,9 @@ toOverleaf(tf, "tf", true);
 
 z = sym("z");
 tustin_s = 2/T * (1 - z^-1)/(1+z^-1);
-toOverleaf(tustin_s, "tust", false);
+toOverleaf(tf, "tf", true);
 tfd = subs(eigz, s, tustin_s);
-toOverleaf(eigz, "eigzd", true);
+toOverleaf(tf, "tf", true);
 
 %% W/ Feedback
 
