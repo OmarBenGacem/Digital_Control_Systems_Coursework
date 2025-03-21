@@ -50,12 +50,149 @@ toOverleaf(tf, "tf", true);
 
 
 z = sym("z");
+syms theta real
+syms n integer
+
 tustin_s = 2/T * (1 - z^-1)/(1+z^-1);
-toOverleaf(tf, "tf", true);
 tfd = subs(eigz, s, tustin_s);
-toOverleaf(tf, "tf", true);
+tfd_det = det(tfd);
+tfd_det_val = subs(tfd_det, [F, g, M, L], [F_val, g_val, M_val, L_val]);
+tfd_equation = 0 == tfd_det_val;
+
+
+zoh = (1 - exp(-T*s))/s;
+zoh_z = (1-z^-1)
+
+
+
+toOverleaf(tustin_s, "tust", false);
+toOverleaf(eigz, "eigzd", true);
+toOverleaf(tfd, "tfd", true);
+toOverleaf(tfd_det, "tfd_det", false)
+
+
+
+
+test = inv(eigz)*B
+thing = (ones(size(test')) .* s) * test
+G_time = cell2sym(arrayfun(@(g) ilaplace(g, s, t), thing, 'UniformOutput', false))
+G_to_dis = subs(G_time, t, n*T);
+G_z = cell2sym(arrayfun(@(g) ztrans(g, n, z), G_to_dis, 'UniformOutput', false))
+
+first
+second = 0
+third  = 0;
+fourth = 0;
+
+G_z_manual = [  ;   ;   ;   ; ]
+
+new_thing = (ones(size(test')) .* zoh_z) * G_z
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% %% Last ditch
+% K_val = place(A_val, B_val, poles);
+% % new_k = exp(K_val*T);
+% asd = det(eigz);
+% dsa = det( diag([s,s,s,s]) - B * K_val );
+% ansn = asd / (1 + dsa);
+% current_res = simplifyFraction(ansn);
+% current_res_val = subs(current_res, [F, g, M, L], [F_val, g_val, M_val, L_val]);
+% 
+% current_res = current_res * zoh;
+% currez = simplify(subs(current_res, s, tustin_s));
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% denominator = numden(simplifyFraction(subs(currez, [F, g, M, L, K], [F_val, g_val, M_val, L_val, K_val])))
+% 
+% 
+% denominator = subs(denominator, exp(-(2*(z - 1))/(z + 1)), z^-1);
+% denominator = subs(denominator, exp((2*(z - 1))/(z + 1)), z);
+% 
+% 
+% %manual intervention
+% denominator = simplifyFraction(-59250482597593088*T*z^-1*(z - 1)*(z + 1)*(T + 2*z + T*z - 2)*(233*T^2*z^2 + 466*T^2*z + 233*T^2 - 80*z^2 + 160*z - 80));
+% denominator = expand(denominator); 
+% 
+% latex(denominator)
+% 
+% D_zpoly_sym = denominator;   % if D_sym has z^(-n) up to z^0
+% 
+% D_zpoly_fun = matlabFunction(D_zpoly_sym, 'Vars', {z, T, t});
+% Tvec = linspace(0.000001, 1.0, 300);  
+% rho  = zeros(size(Tvec));        
+% for i = 1:length(Tvec)
+%     Tval = Tvec(i);
+% 
+%     D_zpoly_at_T = subs(D_zpoly_sym, T, Tval);
+%     p_coeffs = sym2poly(D_zpoly_at_T);  
+% 
+%     z_roots = roots(p_coeffs);
+% 
+%     rho(i) = max(abs(z_roots));
+% end
+% 
+% 
+% idx_stable = find(rho < 1);
+% 
+% if isempty(idx_stable)
+%     warning('No stable T found in tested range!');
+% else
+%     idx_max = max(idx_stable);
+%     Tcrit_approx = Tvec(idx_max);
+%     fprintf('Approx. Tcrit ~ %g\n', Tcrit_approx);
+% end
+
+
+
+
+
+
+
+
+
+
 
 %% W/ Feedback
+% 
+% fdbk_tf = K * eigz * B;
+% % K_val = place(A_val, B_val, poles);
+% % new_poles = exp(K*T);
+% fdbk_tf_vals = subs(fdbk_tf, [F, g, M, L, K], [F_val, g_val, M_val, L_val, new_poles]);
+% % fdbk_tf_vals = subs(fdbk_tf_vals,K, K_val)
+% zoh = (1 - exp(-T*s))/s;
+% 
+% sampled_sig = fdbk_tf_vals * zoh;
+% zdom = subs(sampled_sig, s, tustin_s);
+% latex(simplify(zdom));
+% 
+% 
+% newting = ilaplace(det(eigz), s, t)
+% newting = subs(newting, t, n*T);
+% newting = ztrans(newting,n,z);
 
-fdbk = (A + B*K);
-zoh = (1 - exp(-T*s))/s;
+% sampled_sig = partfrac(sampled_sig, s);
+
+
+
+% invlapl = simplify(ilaplace(sampled_sig, s, t));
+% invlapl = subs(invlapl, t, n*T);
+
+% ztrans(sampled_sig, n, z)
