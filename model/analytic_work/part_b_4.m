@@ -50,9 +50,15 @@ toOverleaf(tf, "tf", true);
 
 
 z = sym("z");
+syms theta real
 tustin_s = 2/T * (1 - z^-1)/(1+z^-1);
 tfd = subs(eigz, s, tustin_s);
 tfd_det = det(tfd);
+tfd_det_val = subs(tfd_det, [F, g, M, L], [F_val, g_val, M_val, L_val]);
+tfd_equation = 0 == tfd_det_val;
+
+
+
 
 
 toOverleaf(tustin_s, "tust", false);

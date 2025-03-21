@@ -6,14 +6,14 @@ part_a;
 
 load_variables;
 
-plot_B2  = false;
-plot_B3  = false;
-plot_B4  = false;
-plot_B5  = false;
+plot_B2  = true;
+plot_B3  = true;
+plot_B4  = true;
+plot_B5  = true;
 plot_B7  = true;
-plot_B8  = false;
-plot_B9  = false;
-plot_B10 = false;
+plot_B8  = true;
+plot_B9  = true;
+plot_B10 = true;
 
 %                      s     sdot   phi     dphi
 initial_conditions = [ 0,   0,     0.0872665,      0;
@@ -323,6 +323,7 @@ toOverleaf(Kd, "Kd", true);
 if plot_B7
     
     figure('Position', [100, 100, 1600, 800]);
+    
     for i = 1:size(initial_conditions,1)
        IC_deg = initial_conditions(i,3) * (180/pi);
     
@@ -360,7 +361,7 @@ if plot_B7
 
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
-
+        IC_deg = initial_conditions(i,3) * (180/pi);
 
         state = initial_conditions(i, :).';
         
@@ -383,7 +384,7 @@ if plot_B7
         plot(t_sim, x_hist(4, :)*180/pi, 's--', 'LineWidth', 1.5, 'MarkerSize', 4)
         ylabel('Angular Velocity (deg/s)')
         
-        title(sprintf('Initial Condition %d', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         grid on;
         legend('cm/s', 'rad/s', 'Location', 'Best')
@@ -409,7 +410,7 @@ if plot_B8
     nSim = size(initial_conditions, 1);
     
     for i = 1:nSim
-
+        IC_deg = initial_conditions(i,3) * (180/pi);
 
 
         x0 = initial_conditions(i, :).';
@@ -447,14 +448,14 @@ if plot_B8
         yyaxis right
         plot(t_total, x_total(:,3)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('\phi (deg)')
-        title(sprintf('IC %d State', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
         xlim([0 T_final]); 
         ax2 = subplot(2, nSim, i+nSim);
         stairs(t_u, u_total, 'LineWidth', 1.5)
-        title(sprintf('IC %d Actuation', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         ylabel('u(t)')
         grid on;
@@ -464,7 +465,7 @@ if plot_B8
     end
     
     sgtitle('B8) Continuous-Time System with Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation.png');
+    saveas(gcf, '../figures/b8.png');
 end
 
 
@@ -490,12 +491,14 @@ if plot_B9
     
     figure('Position', [100, 100, 1600, 800]);
     for i = 1:size(initial_conditions,1)
+        IC_deg = initial_conditions(i,3) * (180/pi);
         
 
         state = initial_conditions(i, :).';
         init = initial_conditions(i, :).';
         save("digital_values.mat","Ad","Bd", "tspan", "Ts", "init");
         Kd_star = fminsearch(@optimization_problem, Kd);
+        toOverleaf(Kd_star, "kdstar", true);
         delete("digital_values.mat")
         A_d_cl_star = ((Ad - Bd * Kd_star)); 
         t_sim = tspan(1):Ts:tspan(end);
@@ -517,14 +520,14 @@ if plot_B9
         ylabel('\phi (deg)')
 
 
-        title(sprintf('Initial Condition %d', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
     end
 
        sgtitle('B9) Discrete-Time System Responses Using an Optimal Controller: s (cm) and \phi (deg)')
-       saveas(gcf, '../figures/Discrete_Time_Discrete_Actuation_Optimal.png');
+       saveas(gcf, '../figures/b9.png');
     
 end
 
@@ -576,6 +579,7 @@ if plot_B10
     for i = 1:nSim
         % Get the i-th initial condition (as a column vector)
         x0 = initial_conditions(i, :).';
+        IC_deg = initial_conditions(i,3) * (180/pi);
 
         init = x0;
         save("digital_values.mat","Ad","Bd", "tspan", "Ts", "init");
@@ -616,7 +620,7 @@ if plot_B10
         yyaxis right
         plot(t_total, x_total(:,3)*180/pi, '--', 'LineWidth', 1.5)
         ylabel('\phi (deg)')
-        title(sprintf('IC %d State', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         grid on;
         legend('s (cm)', '\phi (deg)', 'Location', 'Best')
@@ -625,7 +629,7 @@ if plot_B10
 
         ax2 = subplot(2, nSim, i+nSim);
         stairs(t_u, u_total, 'LineWidth', 1.5)
-        title(sprintf('IC %d Actuation', i))
+        title(sprintf("Simulation %d, (IC: %.2f°)", i, IC_deg))
         xlabel('Time (s)')
         ylabel('u(t)')
         grid on;
@@ -636,7 +640,7 @@ if plot_B10
     end
     
     sgtitle('B10) Continuous-Time System with an Optimal Discrete-Time Control and Actuation u(t)')
-    saveas(gcf, '../figures/Continuous_Time_Discrete_Actuation_Optimal.png');
+    saveas(gcf, '../figures/b10.png');
 end
 
 
