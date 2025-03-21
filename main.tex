@@ -164,12 +164,11 @@ To find the transfer function of the linear system, we consider the input-to-sta
 This gives the transfer function of this system that will be shown below in Equation \ref{acctf}. Note the substitution $x(0)=\underline{0}$ was made as per the definition of a transfer function.
 
 \begin{equation}\label{acctf}
-    sX(s)-AX(s)=BU(s)\rightarrow \frac{X(s)}{U(s)}=\frac{B}{Is-A}= 
+    sX(s)-AX(s)=BU(s)\rightarrow G(s)=\frac{X(s)}{U(s)}=(Is-A)^{-1}B=\input{equations/tf} 
 \end{equation}
 
-\paragraph{Equivalent Discrete Time Model}
-
-The equivalent discrete-time model for this system cana be derr
+\paragraph{Transfer Function Stability}
+The stability of the transfer function depends on the determinant (and thus the poles) of ($(Is-A)^-1$). To quickly convert from the Lapclace domain to the Z domain, we 
 
 
 
